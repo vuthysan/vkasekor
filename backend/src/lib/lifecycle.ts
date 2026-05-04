@@ -8,7 +8,9 @@ export function startOfDayInPhnomPenh(date: Date): Date {
 }
 
 export function daysBetween(a: Date, b: Date): number {
-  return Math.floor((b.getTime() - a.getTime()) / (24 * 60 * 60 * 1000))
+  const aDay = startOfDayInPhnomPenh(a).getTime()
+  const bDay = startOfDayInPhnomPenh(b).getTime()
+  return Math.round((bDay - aDay) / (24 * 60 * 60 * 1000))
 }
 
 export function addDays(date: Date, days: number): Date {

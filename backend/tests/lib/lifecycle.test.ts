@@ -18,9 +18,11 @@ describe("startOfDayInPhnomPenh", () => {
 })
 
 describe("daysBetween", () => {
-  it("returns 0 for same ICT day", () => {
-    const a = new Date("2026-05-04T00:00:00Z")
-    const b = new Date("2026-05-04T23:00:00Z")
+  it("returns 0 for two timestamps within the same ICT day", () => {
+    // 2026-05-04 17:30 UTC = 2026-05-05 00:30 ICT  (start of May 5 ICT)
+    // 2026-05-05 16:30 UTC = 2026-05-05 23:30 ICT  (end of May 5 ICT)
+    const a = new Date("2026-05-04T17:30:00Z")
+    const b = new Date("2026-05-05T16:30:00Z")
     expect(daysBetween(a, b)).toBe(0)
   })
 
