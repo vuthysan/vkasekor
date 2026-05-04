@@ -7,6 +7,7 @@ import { authRoutes } from "~/routes/auth"
 import { assetsRoutes } from "~/routes/assets"
 import { adminUsersRoutes } from "~/routes/users"
 import { alertsRoutes } from "~/routes/alerts"
+import { rulesRoutes } from "~/routes/rules"
 import { runDailyCheck } from "~/cron/daily-check"
 
 await connectDb(env.MONGODB_URI)
@@ -16,7 +17,7 @@ const app = new Hono()
 app.use(
   "*",
   cors({
-    origin: (origin) => origin ?? "*",
+    origin: env.FRONTEND_ORIGIN ?? "*",
     credentials: true,
   }),
 )
@@ -30,6 +31,7 @@ app.route(
 )
 app.route("/api/admin/users", adminUsersRoutes({ jwtSecret: env.JWT_SECRET }))
 app.route("/api/alerts", alertsRoutes({ jwtSecret: env.JWT_SECRET }))
+app.route("/api/rules", rulesRoutes({ jwtSecret: env.JWT_SECRET }))
 
 // Dev-only endpoint to trigger the cron immediately for manual testing.
 if (env.NODE_ENV !== "production") {
