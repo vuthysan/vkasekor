@@ -20,7 +20,7 @@ export function verifyTelegramLogin(
   const { hash, ...fields } = payload
   const dataString = Object.keys(fields)
     .sort()
-    .map((k) => `${k}=${(fields as any)[k]}`)
+    .map((k) => `${k}=${fields[k as keyof typeof fields]}`)
     .join("\n")
   const secret = createHash("sha256").update(botToken).digest()
   const expected = createHmac("sha256", secret).update(dataString).digest("hex")
