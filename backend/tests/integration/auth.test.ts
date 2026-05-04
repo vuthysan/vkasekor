@@ -9,7 +9,6 @@ import { setupTestDb, teardownTestDb, clearAllCollections } from "./helpers"
 import { collections } from "~/lib/db"
 import { authRoutes } from "~/routes/auth"
 import { signSession } from "~/lib/jwt"
-import type { SessionPayload } from "~/types"
 
 const BOT_TOKEN = "1:TEST"
 const JWT_SECRET = "x".repeat(32)
