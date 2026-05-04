@@ -23,6 +23,7 @@ export function formatAlertMessage({ asset, rule, batchLabel, catchUp }: FormatA
   const prefix = catchUp ? "[ត្រួតឡើងវិញ] " : ""
   const instructions = rule.instructions_kh
     .split("\n")
+    .filter((line) => line.trim() !== "")
     .map((line) => `• ${line}`)
     .join("\n")
 
