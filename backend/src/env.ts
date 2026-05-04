@@ -7,6 +7,7 @@ const EnvSchema = z.object({
   JWT_SECRET: z.string().min(32, "JWT_SECRET must be at least 32 chars"),
   PORT: z.coerce.number().int().positive().default(8080),
   NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
+  FRONTEND_ORIGIN: z.string().optional(),
 })
 
 export type Env = z.infer<typeof EnvSchema>
