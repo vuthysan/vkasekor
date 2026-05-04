@@ -62,6 +62,7 @@ export function authRoutes(cfg: AuthRouteConfig) {
         id: user._id.toHexString(),
         telegram_id: user.telegram_id,
         display_name: user.display_name,
+        telegram_username: user.telegram_username,
       },
     })
   })

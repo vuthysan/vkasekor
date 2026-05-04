@@ -56,6 +56,8 @@ describe("POST /api/auth/telegram", () => {
     const setCookie = res.headers.get("set-cookie") ?? ""
     expect(setCookie).toContain("session=")
     expect(setCookie).toContain("HttpOnly")
+    const body = await res.json()
+    expect(body.user.display_name).toBe("Test")
   })
 
   it("rejects when telegram_id is not whitelisted", async () => {
