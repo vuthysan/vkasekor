@@ -42,6 +42,10 @@ export async function processOneRule(
     throw err
   }
 
+  // V1 risk: if sendTelegramMessage rejects (network exception), the alert row
+  // remains delivery_status="pending" and the unique index prevents a retry on
+  // subsequent runs. Acceptable for a small family system; revisit in V2.
+
   const text = formatAlertMessage({ asset, rule, batchLabel: batchLabel(asset), catchUp: isCatchUp })
   const result = await sendTelegramMessage({ botToken: args.botToken, chatId: args.chatId, text })
 
@@ -85,6 +89,7 @@ export async function runDailyCheck(args: RunArgs): Promise<void> {
           { _id: asset._id },
           { $set: { status: "harvested", updated_at: new Date() } },
         )
+        asset.status = "harvested"
       }
     }
   }
