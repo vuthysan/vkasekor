@@ -11,21 +11,18 @@ import { signSession } from "~/lib/jwt"
 
 const JWT_SECRET = "x".repeat(32)
 
-async function seedUser(role: "admin" | "member" = "member") {
+async function seedUser() {
   const _id = new ObjectId()
   await collections.users().insertOne({
     _id,
     telegram_id: 1,
     telegram_username: "u",
     display_name: "U",
-    role,
+    approved: true,
     created_at: new Date(),
     last_login_at: new Date(),
   })
-  const token = await signSession(
-    { user_id: _id.toHexString(), telegram_id: 1, role },
-    JWT_SECRET,
-  )
+  const token = await signSession({ user_id: _id.toHexString(), telegram_id: 1 }, JWT_SECRET)
   return { userId: _id, token }
 }
 
@@ -123,8 +120,8 @@ describe("assets CRUD", () => {
     expect(after?.arrival_date.getTime()).toBe(arrival.getTime())
   })
 
-  it("DELETE archives a batch (admin only)", async () => {
-    const { token, userId } = await seedUser("admin")
+  it("DELETE archives a batch", async () => {
+    const { token, userId } = await seedUser()
     const _id = new ObjectId()
     await collections.assets().insertOne({
       _id,
@@ -147,15 +144,6 @@ describe("assets CRUD", () => {
     expect(res.status).toBe(200)
     const after = await collections.assets().findOne({ _id })
     expect(after?.status).toBe("archived")
-  })
-
-  it("DELETE rejects member role", async () => {
-    const { token } = await seedUser("member")
-    const res = await buildApp().request(`/api/assets/${new ObjectId().toHexString()}`, {
-      method: "DELETE",
-      headers: { Cookie: `session=${token}` },
-    })
-    expect(res.status).toBe(403)
   })
 
   it("backfills alerts for past arrival_date", async () => {

@@ -1,13 +1,11 @@
 import type { ObjectId } from "mongodb"
 
-export type Role = "admin" | "member"
-
 export interface User {
   _id: ObjectId
   telegram_id: number
   telegram_username: string
   display_name: string
-  role: Role
+  approved: boolean
   created_at: Date
   last_login_at: Date
 }
@@ -70,5 +68,4 @@ export interface SystemRecord {
 export interface SessionPayload {
   user_id: string
   telegram_id: number
-  role: Role
 }

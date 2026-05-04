@@ -32,13 +32,13 @@ afterAll(async () => teardownTestDb())
 beforeEach(async () => clearAllCollections())
 
 describe("POST /api/auth/telegram", () => {
-  it("issues a session for a whitelisted user", async () => {
+  it("issues a session for an approved user", async () => {
     await collections.users().insertOne({
       _id: new ObjectId(),
       telegram_id: 42,
       telegram_username: "abc",
       display_name: "Test",
-      role: "admin",
+      approved: true,
       created_at: new Date(),
       last_login_at: new Date(),
     })

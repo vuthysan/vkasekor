@@ -2,7 +2,7 @@ import { Hono } from "hono"
 import { z } from "zod"
 import { ObjectId } from "mongodb"
 import { collections } from "~/lib/db"
-import { requireAuth, requireRole } from "~/middleware/auth"
+import { requireAuth } from "~/middleware/auth"
 import { addDays, startOfDayInPhnomPenh } from "~/lib/lifecycle"
 import { runBackfillForAsset } from "~/cron/daily-check"
 import type { Asset } from "~/types"
@@ -97,7 +97,7 @@ export function assetsRoutes(cfg: AssetsRouteConfig) {
     return c.json({ asset: result })
   })
 
-  app.delete("/:id", requireRole("admin"), async (c) => {
+  app.delete("/:id", async (c) => {
     const id = c.req.param("id") ?? ""
     if (!ObjectId.isValid(id)) return c.json({ error: "invalid id" }, 400)
     const result = await collections

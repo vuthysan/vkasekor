@@ -2,13 +2,13 @@ import { Hono } from "hono"
 import { z } from "zod"
 import { ObjectId } from "mongodb"
 import { collections } from "~/lib/db"
-import { requireAuth, requireRole } from "~/middleware/auth"
+import { requireAuth } from "~/middleware/auth"
 
 const CreateSchema = z.object({
   telegram_id: z.number().int(),
   telegram_username: z.string().optional().default(""),
   display_name: z.string().min(1),
-  role: z.enum(["admin", "member"]),
+  approved: z.boolean().default(false),
 })
 
 interface UsersRouteConfig {
@@ -17,7 +17,7 @@ interface UsersRouteConfig {
 
 export function adminUsersRoutes(_cfg: UsersRouteConfig) {
   const app = new Hono()
-  app.use("*", requireAuth, requireRole("admin"))
+  app.use("*", requireAuth)
 
   app.get("/", async (c) => {
     const users = await collections.users().find({}).sort({ created_at: -1 }).toArray()
@@ -35,7 +35,7 @@ export function adminUsersRoutes(_cfg: UsersRouteConfig) {
         telegram_id: parsed.data.telegram_id,
         telegram_username: parsed.data.telegram_username,
         display_name: parsed.data.display_name,
-        role: parsed.data.role,
+        approved: parsed.data.approved,
         created_at: now,
         last_login_at: now,
       })

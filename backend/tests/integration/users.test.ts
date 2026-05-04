@@ -11,19 +11,18 @@ import { signSession } from "~/lib/jwt"
 
 const JWT_SECRET = "x".repeat(32)
 
-async function seedUser(role: "admin" | "member") {
+async function seedUser() {
   const _id = new ObjectId()
-  const telegram_id = role === "admin" ? 100 : 200
   await collections.users().insertOne({
     _id,
-    telegram_id,
-    telegram_username: role,
-    display_name: role,
-    role,
+    telegram_id: 100,
+    telegram_username: "owner",
+    display_name: "Owner",
+    approved: true,
     created_at: new Date(),
     last_login_at: new Date(),
   })
-  const token = await signSession({ user_id: _id.toHexString(), telegram_id, role }, JWT_SECRET)
+  const token = await signSession({ user_id: _id.toHexString(), telegram_id: 100 }, JWT_SECRET)
   return { token, userId: _id }
 }
 
@@ -37,33 +36,43 @@ beforeAll(async () => setupTestDb())
 afterAll(async () => teardownTestDb())
 beforeEach(async () => clearAllCollections())
 
-describe("admin users routes", () => {
-  it("admin can list users", async () => {
-    const { token } = await seedUser("admin")
+describe("users management routes", () => {
+  it("approved user can list users", async () => {
+    const { token } = await seedUser()
     const res = await buildApp().request("/api/admin/users", { headers: { Cookie: `session=${token}` } })
     expect(res.status).toBe(200)
     const body = await res.json()
     expect(body.users).toHaveLength(1)
   })
 
-  it("member is forbidden from listing users", async () => {
-    const { token } = await seedUser("member")
-    const res = await buildApp().request("/api/admin/users", { headers: { Cookie: `session=${token}` } })
-    expect(res.status).toBe(403)
+  it("unauthenticated request is rejected", async () => {
+    const res = await buildApp().request("/api/admin/users")
+    expect(res.status).toBe(401)
   })
 
-  it("admin can create user", async () => {
-    const { token } = await seedUser("admin")
+  it("approved user can add a new user", async () => {
+    const { token } = await seedUser()
     const res = await buildApp().request("/api/admin/users", {
       method: "POST",
       headers: { "Content-Type": "application/json", Cookie: `session=${token}` },
-      body: JSON.stringify({ telegram_id: 555, display_name: "Brother", role: "member" }),
+      body: JSON.stringify({ telegram_id: 555, display_name: "Brother", approved: true }),
     })
     expect(res.status).toBe(201)
   })
 
-  it("admin cannot remove self", async () => {
-    const { token, userId } = await seedUser("admin")
+  it("duplicate telegram_id returns 409", async () => {
+    const { token } = await seedUser()
+    const body = JSON.stringify({ telegram_id: 100, display_name: "Dup" })
+    const res = await buildApp().request("/api/admin/users", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Cookie: `session=${token}` },
+      body,
+    })
+    expect(res.status).toBe(409)
+  })
+
+  it("cannot remove self", async () => {
+    const { token, userId } = await seedUser()
     const res = await buildApp().request(`/api/admin/users/${userId.toHexString()}`, {
       method: "DELETE",
       headers: { Cookie: `session=${token}` },

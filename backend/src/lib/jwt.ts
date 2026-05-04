@@ -18,12 +18,8 @@ export async function signSession(payload: SessionPayload, secret: string): Prom
 
 export async function verifySession(token: string, secret: string): Promise<SessionPayload> {
   const { payload } = await jwtVerify(token, key(secret), { algorithms: [ALG] })
-  if (
-    typeof payload.user_id !== "string" ||
-    typeof payload.telegram_id !== "number" ||
-    (payload.role !== "admin" && payload.role !== "member")
-  ) {
+  if (typeof payload.user_id !== "string" || typeof payload.telegram_id !== "number") {
     throw new Error("invalid session payload")
   }
-  return { user_id: payload.user_id, telegram_id: payload.telegram_id, role: payload.role }
+  return { user_id: payload.user_id, telegram_id: payload.telegram_id }
 }

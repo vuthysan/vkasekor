@@ -35,7 +35,7 @@ export function authRoutes(cfg: AuthRouteConfig) {
     }
 
     const user = await collections.users().findOne({ telegram_id: parsed.data.id })
-    if (!user) return c.json({ error: "not whitelisted" }, 403)
+    if (!user || !user.approved) return c.json({ error: "access denied" }, 403)
 
     await collections.users().updateOne(
       { _id: user._id },
@@ -43,7 +43,7 @@ export function authRoutes(cfg: AuthRouteConfig) {
     )
 
     const token = await signSession(
-      { user_id: user._id.toHexString(), telegram_id: user.telegram_id, role: user.role },
+      { user_id: user._id.toHexString(), telegram_id: user.telegram_id },
       cfg.jwtSecret,
     )
 
@@ -60,7 +60,6 @@ export function authRoutes(cfg: AuthRouteConfig) {
         id: user._id.toHexString(),
         telegram_id: user.telegram_id,
         display_name: user.display_name,
-        role: user.role,
       },
     })
   })

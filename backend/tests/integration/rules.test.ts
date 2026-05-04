@@ -18,11 +18,11 @@ async function authToken() {
     telegram_id: 1,
     telegram_username: "u",
     display_name: "U",
-    role: "member",
+    approved: true,
     created_at: new Date(),
     last_login_at: new Date(),
   })
-  return signSession({ user_id: _id.toHexString(), telegram_id: 1, role: "member" }, JWT_SECRET)
+  return signSession({ user_id: _id.toHexString(), telegram_id: 1 }, JWT_SECRET)
 }
 
 function buildApp() {
