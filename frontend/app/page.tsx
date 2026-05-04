@@ -97,7 +97,7 @@ export default function LoginPage() {
               Sign in to your team account
             </p>
 
-            <form className="flex flex-col gap-4">
+            <form className="flex flex-col gap-4" onSubmit={(e) => e.preventDefault()}>
               {/* Email field */}
               <TextField className="flex flex-col gap-1.5">
                 <Label className="text-[11px] font-semibold tracking-[0.8px] uppercase text-[#666]">
@@ -106,7 +106,7 @@ export default function LoginPage() {
                 <Input
                   type="email"
                   placeholder="you@kasekor.com"
-                  className="w-full rounded-lg border-[1.5px] border-[#e5e5e0] bg-white px-3 py-2.5 text-sm text-[#333] placeholder:text-[#ccc] outline-none hover:border-[#16a34a] focus:border-[#16a34a]"
+                  className="w-full rounded-lg border-[1.5px] border-[#e5e5e0] bg-white px-3 py-2.5 text-sm text-[#333] placeholder:text-[#ccc] outline-none hover:border-[#16a34a] focus-visible:border-[#16a34a]"
                 />
               </TextField>
 
@@ -118,7 +118,7 @@ export default function LoginPage() {
                 <Input
                   type="password"
                   placeholder="••••••••"
-                  className="w-full rounded-lg border-[1.5px] border-[#e5e5e0] bg-white px-3 py-2.5 text-sm text-[#333] placeholder:text-[#ccc] outline-none hover:border-[#16a34a] focus:border-[#16a34a]"
+                  className="w-full rounded-lg border-[1.5px] border-[#e5e5e0] bg-white px-3 py-2.5 text-sm text-[#333] placeholder:text-[#ccc] outline-none hover:border-[#16a34a] focus-visible:border-[#16a34a]"
                 />
               </TextField>
 
