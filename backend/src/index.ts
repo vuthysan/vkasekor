@@ -24,7 +24,16 @@ app.use(
 
 app.get("/health", (c) => c.json({ ok: true, ts: new Date().toISOString() }))
 
-app.route("/api/auth", authRoutes({ botToken: env.BOT_TOKEN, jwtSecret: env.JWT_SECRET }))
+app.route(
+  "/api/auth",
+  authRoutes({
+    botToken: env.BOT_TOKEN,
+    jwtSecret: env.JWT_SECRET,
+    adminEmail: env.ADMIN_EMAIL,
+    adminPasswordHash: env.ADMIN_PASSWORD_HASH,
+    adminUserId: env.ADMIN_USER_ID,
+  }),
+)
 app.route(
   "/api/assets",
   assetsRoutes({ jwtSecret: env.JWT_SECRET, botToken: env.BOT_TOKEN, chatId: env.TELEGRAM_GROUP_ID }),
