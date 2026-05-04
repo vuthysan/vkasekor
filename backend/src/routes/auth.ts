@@ -76,7 +76,12 @@ export function authRoutes(cfg: AuthRouteConfig) {
       return c.json({ error: "bad payload" }, 400)
     }
     const emailMatch = body.email === cfg.adminEmail
-    const passwordMatch = await Bun.password.verify(body.password, cfg.adminPasswordHash)
+    let passwordMatch = false
+    try {
+      passwordMatch = await Bun.password.verify(body.password, cfg.adminPasswordHash)
+    } catch {
+      return c.json({ error: "invalid credentials" }, 401)
+    }
     if (!emailMatch || !passwordMatch) {
       return c.json({ error: "invalid credentials" }, 401)
     }
