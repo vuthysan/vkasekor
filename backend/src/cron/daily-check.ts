@@ -100,3 +100,21 @@ export async function runDailyCheck(args: RunArgs): Promise<void> {
     { upsert: true },
   )
 }
+
+interface BackfillArgs {
+  asset: Asset
+  botToken: string
+  chatId: string
+  today: Date
+}
+
+export async function runBackfillForAsset({ asset, botToken, chatId, today }: BackfillArgs): Promise<void> {
+  const allRules = await collections.rules().find({ asset_type: asset.type }).toArray()
+  const ageToday = daysBetween(asset.arrival_date, today)
+  for (let day = 0; day <= ageToday; day++) {
+    const rules = matchingRulesForAge(allRules, asset.type, day)
+    for (const rule of rules) {
+      await processOneRule(asset, rule, today, /* isCatchUp */ true, { botToken, chatId })
+    }
+  }
+}

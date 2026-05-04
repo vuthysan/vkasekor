@@ -4,6 +4,7 @@ import { ObjectId } from "mongodb"
 import { collections } from "~/lib/db"
 import { requireAuth, requireRole } from "~/middleware/auth"
 import { addDays, startOfDayInPhnomPenh } from "~/lib/lifecycle"
+import { runBackfillForAsset } from "~/cron/daily-check"
 import type { Asset } from "~/types"
 
 const CreateSchema = z.object({
@@ -21,9 +22,11 @@ const PatchSchema = z.object({
 
 interface AssetsRouteConfig {
   jwtSecret: string
+  botToken: string
+  chatId: string
 }
 
-export function assetsRoutes(_cfg: AssetsRouteConfig) {
+export function assetsRoutes(cfg: AssetsRouteConfig) {
   const app = new Hono()
   app.use("*", requireAuth)
 
@@ -51,6 +54,15 @@ export function assetsRoutes(_cfg: AssetsRouteConfig) {
       updated_at: now,
     }
     await collections.assets().insertOne(asset)
+    const today = startOfDayInPhnomPenh(now)
+    if (arrival.getTime() < today.getTime()) {
+      await runBackfillForAsset({
+        asset,
+        botToken: cfg.botToken,
+        chatId: cfg.chatId,
+        today,
+      })
+    }
     return c.json({ asset }, 201)
   })
 
