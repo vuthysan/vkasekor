@@ -1,3 +1,7 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+/* HeroUI v3 already imports tailwindcss internally — one import covers both */
+@import "@heroui/styles/css";
+
+/* Brand color token for Tailwind v4 @theme layer */
+@theme {
+  --color-brand: #16a34a;
+}
