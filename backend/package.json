@@ -9,7 +9,8 @@
     "test": "bun test",
     "test:watch": "bun test --watch",
     "setup-indexes": "bun run src/scripts/setup-indexes.ts",
-    "seed": "bun run src/scripts/seed-rules.ts"
+    "seed": "bun run src/scripts/seed-rules.ts",
+    "hash-password": "bun run src/scripts/hash-password.ts"
   },
   "dependencies": {
     "hono": "^4.6.0",
