@@ -74,7 +74,7 @@ export function assetsRoutes(cfg: AssetsRouteConfig) {
   })
 
   app.get("/:id", async (c) => {
-    const id = c.req.param("id")
+    const id = c.req.param("id") ?? ""
     if (!ObjectId.isValid(id)) return c.json({ error: "invalid id" }, 400)
     const asset = await collections.assets().findOne({ _id: new ObjectId(id) })
     if (!asset) return c.json({ error: "not found" }, 404)
@@ -82,7 +82,7 @@ export function assetsRoutes(cfg: AssetsRouteConfig) {
   })
 
   app.patch("/:id", async (c) => {
-    const id = c.req.param("id")
+    const id = c.req.param("id") ?? ""
     if (!ObjectId.isValid(id)) return c.json({ error: "invalid id" }, 400)
     const body = await c.req.json()
     const parsed = PatchSchema.safeParse(body)
@@ -98,7 +98,7 @@ export function assetsRoutes(cfg: AssetsRouteConfig) {
   })
 
   app.delete("/:id", requireRole("admin"), async (c) => {
-    const id = c.req.param("id")
+    const id = c.req.param("id") ?? ""
     if (!ObjectId.isValid(id)) return c.json({ error: "invalid id" }, 400)
     const result = await collections
       .assets()
