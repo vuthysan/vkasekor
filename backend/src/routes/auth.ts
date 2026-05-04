@@ -1,9 +1,11 @@
 import { Hono } from "hono"
 import { setCookie, deleteCookie } from "hono/cookie"
 import { z } from "zod"
+import { ObjectId } from "mongodb"
 import { verifyTelegramLogin } from "~/lib/telegram"
 import { signSession } from "~/lib/jwt"
 import { collections } from "~/lib/db"
+import { requireAuth } from "~/middleware/auth"
 
 const TelegramLoginSchema = z.object({
   id: z.number(),
@@ -60,6 +62,20 @@ export function authRoutes(cfg: AuthRouteConfig) {
         id: user._id.toHexString(),
         telegram_id: user.telegram_id,
         display_name: user.display_name,
+      },
+    })
+  })
+
+  app.get("/me", requireAuth, async (c) => {
+    const session = c.get("session")
+    const user = await collections.users().findOne({ _id: new ObjectId(session.user_id) })
+    if (!user) return c.json({ error: "not found" }, 404)
+    return c.json({
+      user: {
+        id: user._id.toHexString(),
+        telegram_id: user.telegram_id,
+        display_name: user.display_name,
+        telegram_username: user.telegram_username,
       },
     })
   })

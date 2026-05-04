@@ -8,6 +8,7 @@ import { ObjectId } from "mongodb"
 import { setupTestDb, teardownTestDb, clearAllCollections } from "./helpers"
 import { collections } from "~/lib/db"
 import { authRoutes } from "~/routes/auth"
+import { signSession } from "~/lib/jwt"
 
 const BOT_TOKEN = "1:TEST"
 const JWT_SECRET = "x".repeat(32)
@@ -79,6 +80,34 @@ describe("POST /api/auth/telegram", () => {
         hash: "0".repeat(64),
       }),
     })
+    expect(res.status).toBe(401)
+  })
+})
+
+describe("GET /api/auth/me", () => {
+  it("returns user info for a valid session", async () => {
+    const _id = new ObjectId()
+    await collections.users().insertOne({
+      _id,
+      telegram_id: 99,
+      telegram_username: "me_user",
+      display_name: "Me",
+      approved: true,
+      created_at: new Date(),
+      last_login_at: new Date(),
+    })
+    const token = await signSession({ user_id: _id.toHexString(), telegram_id: 99 }, JWT_SECRET)
+    const res = await buildApp().request("/api/auth/me", {
+      headers: { Cookie: `session=${token}` },
+    })
+    expect(res.status).toBe(200)
+    const body = await res.json()
+    expect(body.user.display_name).toBe("Me")
+    expect(body.user.telegram_username).toBe("me_user")
+  })
+
+  it("returns 401 without a session", async () => {
+    const res = await buildApp().request("/api/auth/me")
     expect(res.status).toBe(401)
   })
 })

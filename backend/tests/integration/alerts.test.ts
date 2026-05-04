@@ -93,4 +93,34 @@ describe("GET /api/alerts", () => {
     expect(body.alerts).toHaveLength(1)
     expect(body.alerts[0].asset_id).toBe(assetA.toHexString())
   })
+
+  it("returns alerts from the last N days when ?days= is given", async () => {
+    const yesterday = new Date(startOfDayInPhnomPenh(new Date()).getTime() - 24 * 60 * 60 * 1000)
+    await collections.alerts().insertOne({
+      _id: new ObjectId(),
+      asset_id: new ObjectId(),
+      rule_id: new ObjectId(),
+      scheduled_for: yesterday,
+      sent_at: new Date(),
+      delivery_status: "sent",
+      telegram_message_id: 5,
+      error: null,
+      attempt_count: 1,
+    })
+    const token = await authToken()
+    const res = await buildApp().request("/api/alerts?days=2", {
+      headers: { Cookie: `session=${token}` },
+    })
+    expect(res.status).toBe(200)
+    const body = await res.json()
+    expect(body.alerts.length).toBeGreaterThanOrEqual(1)
+  })
+
+  it("rejects days out of range", async () => {
+    const token = await authToken()
+    const res = await buildApp().request("/api/alerts?days=200", {
+      headers: { Cookie: `session=${token}` },
+    })
+    expect(res.status).toBe(400)
+  })
 })
