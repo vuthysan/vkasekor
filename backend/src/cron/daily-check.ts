@@ -42,21 +42,31 @@ export async function processOneRule(
     throw err
   }
 
-  // V1 risk: if sendTelegramMessage rejects (network exception), the alert row
-  // remains delivery_status="pending" and the unique index prevents a retry on
-  // subsequent runs. Acceptable for a small family system; revisit in V2.
+  // On network exception sendTelegramMessage will throw; we catch below and mark
+  // the alert as failed (not pending) so a future retry sweep can recover it.
 
   const text = formatAlertMessage({ asset, rule, batchLabel: batchLabel(asset), catchUp: isCatchUp })
-  const result = await sendTelegramMessage({ botToken: args.botToken, chatId: args.chatId, text })
+
+  let resultOk = false
+  let messageId: number | null = null
+  let errorText: string | null = null
+  try {
+    const result = await sendTelegramMessage({ botToken: args.botToken, chatId: args.chatId, text })
+    resultOk = result.ok
+    messageId = result.result?.message_id ?? null
+    errorText = result.ok ? null : result.description ?? "unknown"
+  } catch (err: any) {
+    errorText = err?.message ?? "network error"
+  }
 
   await collections.alerts().updateOne(
     { _id: alertId },
     {
       $set: {
         sent_at: new Date(),
-        delivery_status: result.ok ? "sent" : "failed",
-        telegram_message_id: result.result?.message_id ?? null,
-        error: result.ok ? null : result.description ?? "unknown",
+        delivery_status: resultOk ? "sent" : "failed",
+        telegram_message_id: messageId,
+        error: errorText,
       },
       $inc: { attempt_count: 1 },
     },
@@ -94,6 +104,9 @@ export async function runDailyCheck(args: RunArgs): Promise<void> {
     }
   }
 
+  // V2: implement retry sweep for delivery_status === "failed" with attempt_count < 3
+  // within the last 3 days. Spec section 5.1 (retryFailedAlerts) describes the policy.
+  // V1 acceptable risk: a transient Telegram failure means the alert is missed entirely.
   await collections.system().updateOne(
     { key: "last_cron_run" },
     { $set: { key: "last_cron_run", value: today } },
