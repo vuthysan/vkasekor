@@ -20,6 +20,9 @@ const TelegramLoginSchema = z.object({
 interface AuthRouteConfig {
   botToken: string
   jwtSecret: string
+  adminEmail: string
+  adminPasswordHash: string
+  adminUserId: string
 }
 
 export function authRoutes(cfg: AuthRouteConfig) {
@@ -65,6 +68,27 @@ export function authRoutes(cfg: AuthRouteConfig) {
         telegram_username: user.telegram_username,
       },
     })
+  })
+
+  app.post("/password", async (c) => {
+    const body = await c.req.json().catch(() => null)
+    if (!body || typeof body.email !== "string" || typeof body.password !== "string") {
+      return c.json({ error: "bad payload" }, 400)
+    }
+    const emailMatch = body.email === cfg.adminEmail
+    const passwordMatch = await Bun.password.verify(body.password, cfg.adminPasswordHash)
+    if (!emailMatch || !passwordMatch) {
+      return c.json({ error: "invalid credentials" }, 401)
+    }
+    const token = await signSession({ user_id: cfg.adminUserId }, cfg.jwtSecret)
+    setCookie(c, "session", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "Lax",
+      path: "/",
+      maxAge: 7 * 24 * 60 * 60,
+    })
+    return c.json({ ok: true })
   })
 
   app.get("/me", requireAuth, async (c) => {

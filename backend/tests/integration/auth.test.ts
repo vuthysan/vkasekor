@@ -9,9 +9,13 @@ import { setupTestDb, teardownTestDb, clearAllCollections } from "./helpers"
 import { collections } from "~/lib/db"
 import { authRoutes } from "~/routes/auth"
 import { signSession } from "~/lib/jwt"
+import type { SessionPayload } from "~/types"
 
 const BOT_TOKEN = "1:TEST"
 const JWT_SECRET = "x".repeat(32)
+const ADMIN_EMAIL = "admin@test.com"
+const ADMIN_USER_ID = "a".repeat(24)
+let ADMIN_PASSWORD_HASH = ""
 
 function sign(fields: Record<string, string | number>) {
   const data = Object.keys(fields)
@@ -24,11 +28,23 @@ function sign(fields: Record<string, string | number>) {
 
 function buildApp() {
   const app = new Hono()
-  app.route("/api/auth", authRoutes({ botToken: BOT_TOKEN, jwtSecret: JWT_SECRET }))
+  app.route(
+    "/api/auth",
+    authRoutes({
+      botToken: BOT_TOKEN,
+      jwtSecret: JWT_SECRET,
+      adminEmail: ADMIN_EMAIL,
+      adminPasswordHash: ADMIN_PASSWORD_HASH,
+      adminUserId: ADMIN_USER_ID,
+    }),
+  )
   return app
 }
 
-beforeAll(async () => setupTestDb())
+beforeAll(async () => {
+  ADMIN_PASSWORD_HASH = await Bun.password.hash("secret123")
+  await setupTestDb()
+})
 afterAll(async () => teardownTestDb())
 beforeEach(async () => clearAllCollections())
 
@@ -111,5 +127,59 @@ describe("GET /api/auth/me", () => {
   it("returns 401 without a session", async () => {
     const res = await buildApp().request("/api/auth/me")
     expect(res.status).toBe(401)
+  })
+})
+
+describe("POST /api/auth/password", () => {
+  it("issues a session cookie for correct credentials", async () => {
+    const res = await buildApp().request("/api/auth/password", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: ADMIN_EMAIL, password: "secret123" }),
+    })
+    expect(res.status).toBe(200)
+    const setCookie = res.headers.get("set-cookie") ?? ""
+    expect(setCookie).toContain("session=")
+    expect(setCookie).toContain("HttpOnly")
+    const body = await res.json()
+    expect(body.ok).toBe(true)
+  })
+
+  it("returns 401 for wrong password", async () => {
+    const res = await buildApp().request("/api/auth/password", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: ADMIN_EMAIL, password: "wrongpassword" }),
+    })
+    expect(res.status).toBe(401)
+  })
+
+  it("returns 401 for wrong email", async () => {
+    const res = await buildApp().request("/api/auth/password", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: "other@test.com", password: "secret123" }),
+    })
+    expect(res.status).toBe(401)
+  })
+
+  it("session from password login is accepted by /me", async () => {
+    const token = await signSession({ user_id: ADMIN_USER_ID }, JWT_SECRET)
+    const _id = new ObjectId(ADMIN_USER_ID)
+    await collections.users().insertOne({
+      _id,
+      telegram_id: 1,
+      telegram_username: "admin",
+      display_name: "Admin",
+      approved: true,
+      created_at: new Date(),
+      last_login_at: new Date(),
+    })
+    const res = await buildApp().request("/api/auth/me", {
+      headers: { Cookie: `session=${token}` },
+    })
+    expect(res.status).toBe(200)
+    const body = await res.json()
+    expect(body.user.display_name).toBe("Admin")
   })
 })
