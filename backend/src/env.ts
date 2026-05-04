@@ -8,6 +8,9 @@ const EnvSchema = z.object({
   PORT: z.coerce.number().int().positive().default(8080),
   NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
   FRONTEND_ORIGIN: z.string().optional(),
+  ADMIN_EMAIL: z.string().email(),
+  ADMIN_PASSWORD_HASH: z.string().min(1),
+  ADMIN_USER_ID: z.string().length(24),
 })
 
 export type Env = z.infer<typeof EnvSchema>
