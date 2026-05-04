@@ -18,8 +18,9 @@ export async function signSession(payload: SessionPayload, secret: string): Prom
 
 export async function verifySession(token: string, secret: string): Promise<SessionPayload> {
   const { payload } = await jwtVerify(token, key(secret), { algorithms: [ALG] })
-  if (typeof payload.user_id !== "string" || typeof payload.telegram_id !== "number") {
+  if (typeof payload.user_id !== "string") {
     throw new Error("invalid session payload")
   }
-  return { user_id: payload.user_id, telegram_id: payload.telegram_id }
+  const telegram_id = typeof payload.telegram_id === "number" ? payload.telegram_id : undefined
+  return { user_id: payload.user_id, telegram_id }
 }

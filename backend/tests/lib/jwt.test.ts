@@ -21,4 +21,11 @@ describe("signSession / verifySession", () => {
     const token = await signSession({ user_id: "abc", telegram_id: 1 }, SECRET)
     await expect(verifySession(token, "y".repeat(32))).rejects.toThrow()
   })
+
+  it("round-trips a payload without telegram_id", async () => {
+    const token = await signSession({ user_id: "abc" }, SECRET)
+    const decoded = await verifySession(token, SECRET)
+    expect(decoded.user_id).toBe("abc")
+    expect(decoded.telegram_id).toBeUndefined()
+  })
 })

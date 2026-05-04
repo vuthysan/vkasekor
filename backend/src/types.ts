@@ -10,8 +10,8 @@ export interface User {
   last_login_at: Date
 }
 
-export type AssetType = "chicken"
-export type Breed = "broiler" | "layer" | "local"
+export type AssetType = "chicken" | "pig" | "duck" | "cucumber" | "cabbage" | "tomato"
+export type Breed = string
 export type AssetStatus = "active" | "harvested" | "archived"
 
 export interface Asset {
@@ -29,7 +29,7 @@ export interface Asset {
   updated_at: Date
 }
 
-export type RuleCategory = "vaccine" | "feed" | "health" | "housing" | "harvest"
+export type RuleCategory = "vaccine" | "feed" | "health" | "housing" | "harvest" | "fertilizer" | "pesticide" | "irrigation" | "planting"
 export type Severity = "critical" | "important" | "info"
 
 export interface Rule {
@@ -67,5 +67,5 @@ export interface SystemRecord {
 
 export interface SessionPayload {
   user_id: string
-  telegram_id: number
+  telegram_id?: number
 }
