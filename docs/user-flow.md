@@ -1,4 +1,4 @@
-# User Flow — Kasekor Helper
+# User Flow — VKasekor
 
 ## Authentication Flow
 

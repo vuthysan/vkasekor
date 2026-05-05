@@ -6,10 +6,10 @@ tags:
   - overview
 ---
 
-# Kasekor Helper: Master Plan & System Overview
+# VKasekor: Master Plan & System Overview
 
 > [!abstract] Executive Summary
-> **Kasekor Helper** (Farmer Helper) is a digital agricultural assistant designed to modernize farming in Cambodia. It bridges the gap between official agricultural guidelines (MAFF) and daily farm operations by providing an automated, scheduled alert system delivered directly to farmers via Telegram.
+> **VKasekor** (Farmer Helper) is a digital agricultural assistant designed to modernize farming in Cambodia. It bridges the gap between official agricultural guidelines (MAFF) and daily farm operations by providing an automated, scheduled alert system delivered directly to farmers via Telegram.
 
 ---
 
@@ -28,7 +28,7 @@ A "set-and-forget" digital assistant. A farmer registers a new batch of assets (
 > [!info] For Software Engineers
 > You do not need to be an agriculture expert to maintain this system. The domain knowledge is completely abstracted from the code.
 
-The core of Kasekor Helper is a **Rules Engine**. Agriculture operates on predictable timelines. We model this by attaching a `day_offset` to specific instructions.
+The core of VKasekor is a **Rules Engine**. Agriculture operates on predictable timelines. We model this by attaching a `day_offset` to specific instructions.
 
 *   **Day 0**: Prepare environment (Heat lamps, Starter Feed).
 *   **Day 7**: First Vaccination (Newcastle).

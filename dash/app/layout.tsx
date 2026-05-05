@@ -21,7 +21,7 @@ const kantumruy = Kantumruy_Pro({
 })
 
 export const metadata: Metadata = {
-  title: "Kasekor Helper",
+  title: "VKasekor",
   description: "Internal team portal",
 }
 

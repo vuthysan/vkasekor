@@ -1,7 +1,7 @@
 {
   "schemaVersion": 2,
   "generatedAt": "2026-05-05T00:00:00Z",
-  "title": "Design System: Kasekor Helper",
+  "title": "Design System: VKasekor",
   "extensions": {
     "colorMeta": {
       "canopy-deep": {
@@ -81,7 +81,7 @@
       }
     },
     "typographyMeta": {
-      "display": { "displayName": "Display", "purpose": "Brand wordmark only — 'Kasekor Helper'. Never used for content headings." },
+      "display": { "displayName": "Display", "purpose": "Brand wordmark only — 'VKasekor'. Never used for content headings." },
       "headline": { "displayName": "Headline", "purpose": "Page section titles. One per viewport zone." },
       "title": { "displayName": "Title", "purpose": "Component headings, table headers, sidebar labels." },
       "body": { "displayName": "Body", "purpose": "Table content, form values, meta text. Max 65-75ch." },
@@ -172,7 +172,7 @@
   ],
   "narrative": {
     "northStar": "The Agronomist's Notebook",
-    "overview": "Kasekor Helper's visual language is the agronomist's field notebook: dense, legible, trusted. The interface is a working document, not a showpiece. Every element earns its space the way a measured entry earns its row — no decoration that isn't load-bearing, no whitespace that doesn't serve hierarchy.\n\nThe color strategy is committed: a deep forest-green sidebar occupies ~30% of the viewport at all times, anchoring the space with unmistakable brand weight. The content surface is warm parchment — the specific off-white of sun-dried field paper. Status signals are the only place where color carries semantic load; everywhere else it recedes.\n\nThis system explicitly rejects consumer agri-app aesthetics and generic SaaS dashboard templates.",
+    "overview": "VKasekor's visual language is the agronomist's field notebook: dense, legible, trusted. The interface is a working document, not a showpiece. Every element earns its space the way a measured entry earns its row — no decoration that isn't load-bearing, no whitespace that doesn't serve hierarchy.\n\nThe color strategy is committed: a deep forest-green sidebar occupies ~30% of the viewport at all times, anchoring the space with unmistakable brand weight. The content surface is warm parchment — the specific off-white of sun-dried field paper. Status signals are the only place where color carries semantic load; everywhere else it recedes.\n\nThis system explicitly rejects consumer agri-app aesthetics and generic SaaS dashboard templates.",
     "keyCharacteristics": [
       "Deep canopy green anchors the navigation; warm parchment grounds the content area",
       "Playfair Display for display and headings; DM Sans for all UI text",

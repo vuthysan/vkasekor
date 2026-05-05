@@ -5,7 +5,7 @@ tags:
   - planning
 ---
 
-# Kasekor Helper: Master To-Do List
+# VKasekor: Master To-Do List
 
 > [!abstract] Project Status
 > **Backend**: Core API & Rules Engine established. Multi-asset support implemented.
@@ -37,10 +37,10 @@ tags:
 
 ### 1. Infrastructure & Layout
 - [ ] Initialize standard UI libraries (Tailwind, Shadcn UI, Lucide icons).
-- [ ] Set up the global application layout (`frontend/app/layout.tsx`).
+- [ ] Set up the global application layout (`dash/app/layout.tsx`).
 - [ ] Build the `Sidebar` navigation component.
 - [ ] Build the Top `Header` component.
-- [ ] Create the Dashboard Layout wrapper (`frontend/app/dashboard/layout.tsx`).
+- [ ] Create the Dashboard Layout wrapper (`dash/app/dashboard/layout.tsx`).
 
 ### 2. Core UI Components (Dashboard Patterns)
 - [ ] Build the `StatCard` widget (for displaying total assets, pending alerts).
@@ -51,7 +51,7 @@ tags:
 ### 3. API Integration & Assembly
 - [ ] Install and configure **TanStack Query** for data fetching.
 - [ ] Create API fetching functions to connect to the Hono backend (`GET /api/assets`).
-- [ ] Assemble the Main Dashboard Page (`frontend/app/dashboard/page.tsx`).
+- [ ] Assemble the Main Dashboard Page (`dash/app/dashboard/page.tsx`).
 - [ ] Populate `StatCard`s with real data.
 - [ ] Populate the `DataTable` with real batch data.
 

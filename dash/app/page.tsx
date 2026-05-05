@@ -2,16 +2,10 @@
 
 import { useState } from "react"
 import { motion } from "motion/react"
-import { Eye, EyeOff } from "lucide-react"
-import {
-  Button,
-  FieldError,
-  Form,
-  Input,
-  Label,
-  Spinner,
-  TextField,
-} from "@heroui/react"
+import { Eye, EyeOff, Loader2 } from "lucide-react"
+import { Button } from "~/components/ui/button"
+import { Input } from "~/components/ui/input"
+import { Label } from "~/components/ui/label"
 
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false)
@@ -89,9 +83,7 @@ export default function LoginPage() {
               letterSpacing: "-0.02em",
             }}
           >
-            Kasekor
-            <br />
-            <span style={{ color: "var(--color-sprout)" }}>Helper</span>
+            VKasekor
           </h2>
         </div>
 
@@ -135,8 +127,7 @@ export default function LoginPage() {
                 color: "var(--color-canopy-deep)",
               }}
             >
-              Kasekor{" "}
-              <span style={{ color: "var(--color-field-green)" }}>Helper</span>
+              VKasekor
             </p>
           </div>
 
@@ -167,18 +158,25 @@ export default function LoginPage() {
           </div>
 
           {/* Form */}
-          <Form
-            className="space-y-5"
-            onSubmit={handleSubmit}
-          >
+          <form className="space-y-5" onSubmit={handleSubmit} noValidate>
             {/* Email */}
-            <TextField isRequired name="email" type="email" className="w-full">
-              <Label className="block text-[11px] font-medium tracking-widest uppercase mb-1.5"
-                style={{ color: "var(--color-canopy-deep)", fontFamily: "var(--font-inter)", opacity: 0.7 }}
+            <div className="w-full">
+              <Label
+                htmlFor="email"
+                className="block text-[11px] font-medium tracking-widest uppercase mb-1.5"
+                style={{
+                  color: "var(--color-canopy-deep)",
+                  fontFamily: "var(--font-inter)",
+                  opacity: 0.7,
+                }}
               >
                 Email
               </Label>
               <Input
+                id="email"
+                name="email"
+                type="email"
+                required
                 placeholder="admin@kasekor.com"
                 className="w-full px-4 py-2.75 text-sm rounded-md outline-none transition-all duration-150 bg-white"
                 style={{
@@ -187,16 +185,19 @@ export default function LoginPage() {
                   fontFamily: "var(--font-inter)",
                 }}
               />
-              <FieldError className="text-xs mt-1"
-                style={{ color: "#dc2626", fontFamily: "var(--font-inter)" }}
-              />
-            </TextField>
+            </div>
 
             {/* Password */}
-            <TextField isRequired name="password" type={showPassword ? "text" : "password"} className="w-full">
+            <div className="w-full">
               <div className="flex items-center justify-between mb-1.5">
-                <Label className="block text-[11px] font-medium tracking-widest uppercase"
-                  style={{ color: "var(--color-canopy-deep)", fontFamily: "var(--font-inter)", opacity: 0.7 }}
+                <Label
+                  htmlFor="password"
+                  className="block text-[11px] font-medium tracking-widest uppercase"
+                  style={{
+                    color: "var(--color-canopy-deep)",
+                    fontFamily: "var(--font-inter)",
+                    opacity: 0.7,
+                  }}
                 >
                   Password
                 </Label>
@@ -204,14 +205,21 @@ export default function LoginPage() {
                   type="button"
                   tabIndex={-1}
                   onClick={() => setShowPassword((v) => !v)}
-                  className="flex items-center gap-1 text-xs transition-colors"
-                  style={{ color: "var(--color-sage-mist)", fontFamily: "var(--font-inter)" }}
+                  className="flex items-center gap-1 text-xs transition-colors cursor-pointer"
+                  style={{
+                    color: "var(--color-sage-mist)",
+                    fontFamily: "var(--font-inter)",
+                  }}
                 >
                   {showPassword ? <EyeOff size={13} /> : <Eye size={13} />}
                   {showPassword ? "Hide" : "Show"}
                 </button>
               </div>
               <Input
+                id="password"
+                name="password"
+                type={showPassword ? "text" : "password"}
+                required
                 placeholder="••••••••"
                 className="w-full px-4 py-2.75 text-sm rounded-md outline-none transition-all duration-150 bg-white"
                 style={{
@@ -220,18 +228,13 @@ export default function LoginPage() {
                   fontFamily: "var(--font-inter)",
                 }}
               />
-              <FieldError className="text-xs mt-1"
-                style={{ color: "#dc2626", fontFamily: "var(--font-inter)" }}
-              />
-            </TextField>
+            </div>
 
             {/* Submit */}
             <Button
               type="submit"
-              isDisabled={isLoading}
-              variant="primary"
-              fullWidth
-              className="py-2.75 text-sm font-medium tracking-wide mt-1 rounded-md"
+              disabled={isLoading}
+              className="w-full py-2.75 text-sm font-medium tracking-wide mt-1 rounded-md h-auto"
               style={{
                 backgroundColor: "var(--color-canopy-deep)",
                 color: "var(--color-rice-parchment)",
@@ -242,14 +245,14 @@ export default function LoginPage() {
             >
               {isLoading ? (
                 <span className="flex items-center justify-center gap-2">
-                  <Spinner size="sm" />
+                  <Loader2 className="h-4 w-4 animate-spin" />
                   Signing in…
                 </span>
               ) : (
                 "Sign In"
               )}
             </Button>
-          </Form>
+          </form>
 
           <p
             className="mt-10 text-xs text-center"
@@ -259,7 +262,7 @@ export default function LoginPage() {
               opacity: 0.7,
             }}
           >
-            Kasekor Helper · Admin Portal
+            VKasekor · Admin Portal
           </p>
         </motion.div>
       </div>

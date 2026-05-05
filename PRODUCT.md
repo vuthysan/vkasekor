@@ -12,7 +12,7 @@ product
 
 ## Product Purpose
 
-Kasekor Helper is an agricultural operations dashboard for managing farm asset batches (chickens, pigs, vegetables/cucumbers) in Cambodia. The operator registers a new batch on day one; the system's Rules Engine automatically calculates daily care instructions and sends Khmer-language Telegram alerts to the farmer. The dashboard is the control surface: register batches, monitor status, track pending alerts, and verify the cron automation is running correctly. Success means zero missed vaccination or feeding windows for active batches.
+VKasekor is an agricultural operations dashboard for managing farm asset batches (chickens, pigs, vegetables/cucumbers) in Cambodia. The operator registers a new batch on day one; the system's Rules Engine automatically calculates daily care instructions and sends Khmer-language Telegram alerts to the farmer. The dashboard is the control surface: register batches, monitor status, track pending alerts, and verify the cron automation is running correctly. Success means zero missed vaccination or feeding windows for active batches.
 
 ## Brand Personality
 
