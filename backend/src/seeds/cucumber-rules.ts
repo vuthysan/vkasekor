@@ -1,0 +1,48 @@
+import type { Rule } from "~/types"
+
+export const CUCUMBER_RULES: Omit<Rule, "_id">[] = [
+  {
+    asset_type: "cucumber",
+    day_offset: 0,
+    category: "planting",
+    severity: "critical",
+    title_kh: "រៀបចំរង និងដាំកូនត្រសក់",
+    title_en: "Prepare beds and plant cucumber",
+    instructions_kh: "រៀបចំដីជាមួយជីទ្រាប់បាត\nដាំចន្លោះជួរ ៥០សង់ទីម៉ែត្រ\nស្រោចទឹកឲ្យជោក",
+    instructions_en: "Prepare soil with base fertilizer, plant 50cm apart, water thoroughly",
+    source_page: 1,
+  },
+  {
+    asset_type: "cucumber",
+    day_offset: 7,
+    category: "irrigation",
+    severity: "important",
+    title_kh: "ពិនិត្យការលូតលាស់ និងស្រោចទឹក",
+    title_en: "Check growth and irrigation",
+    instructions_kh: "ស្រោចទឹក ២ដងក្នុងមួយថ្ងៃ (ព្រឹក/ល្ងាច)\nដកស្មៅជុំវិញគល់",
+    instructions_en: "Water twice daily (morning/evening), remove weeds around base",
+    source_page: 1,
+  },
+  {
+    asset_type: "cucumber",
+    day_offset: 15,
+    category: "fertilizer",
+    severity: "critical",
+    title_kh: "ដាក់ជីបំប៉នលើកទី១",
+    title_en: "First fertilizer application",
+    instructions_kh: "ប្រើជី NPK 15-15-15\nដាក់ជុំវិញគល់ ចម្ងាយ ១០សង់ទីម៉ែត្រ",
+    instructions_en: "Use NPK 15-15-15, apply 10cm away from base",
+    source_page: 2,
+  },
+  {
+    asset_type: "cucumber",
+    day_offset: 30,
+    category: "harvest",
+    severity: "info",
+    title_kh: "ចាប់ផ្តើមប្រមូលផល",
+    title_en: "Start harvesting",
+    instructions_kh: "បេះផ្លែដែលគ្រប់អាយុ\nកុំទុកឲ្យផ្លែចាស់ពេក",
+    instructions_en: "Harvest mature fruits, do not leave them to over-ripen",
+    source_page: 3,
+  },
+]

@@ -8,9 +8,15 @@
     "start": "next start"
   },
   "dependencies": {
-    "@heroui/react": "^3.0.3",
-    "@heroui/styles": "^3.0.3",
+    "@gravity-ui/icons": "^2.18.0",
+    "@radix-ui/react-label": "^2.1.7",
+    "@radix-ui/react-slot": "^1.2.3",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "tailwind-merge": "^3.3.0",
     "@tailwindcss/postcss": "^4.2.4",
+    "@tanstack/react-table": "^8.21.3",
+    "lucide-react": "^1.14.0",
     "motion": "^12.38.0",
     "next": "16.2.4",
     "react": "^19.2.5",

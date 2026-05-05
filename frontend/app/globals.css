@@ -1,3 +1,71 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+
+/* ─── Design tokens ─────────────────────────────────────────────────────── */
+@theme {
+  /* Brand palette */
+  --color-canopy-deep:   #0f3d1f;
+  --color-shadow-canopy: #1a4a2a;
+  --color-field-green:   #16a34a;
+  --color-sprout:        #22c55e;
+  --color-sprout-light:  #86efac;
+
+  /* Surface palette */
+  --color-rice-parchment: #fafaf8;
+  --color-dried-grass:    #e8e5e0;
+  --color-field-stone:    #e5e5e0;
+  --color-sage-mist:      #a3b8aa;
+
+  /* ─── Border radius (dynamic, single-knob) ──────────────────────────────
+     The whole radius scale is derived from one variable: --radius (in :root).
+     Change --radius and every rounded-* utility re-renders proportionally —
+     no rebuild needed, works at runtime via JS / class toggles too.
+  ───────────────────────────────────────────────────────────────────────── */
+  --radius-xs:  calc(var(--radius) - 10px);   /* rounded-xs  */
+  --radius-sm:  calc(var(--radius) - 8px);    /* rounded-sm  */
+  --radius-md:  calc(var(--radius) - 6px);    /* rounded-md  ← buttons, inputs, skeleton */
+  --radius-lg:  calc(var(--radius) - 4px);    /* rounded-lg  */
+  --radius-xl:  var(--radius);                /* rounded-xl  ← cards, alerts, tables    */
+  --radius-2xl: calc(var(--radius) + 6px);    /* rounded-2xl ← farmer hero, task cards  */
+  --radius-3xl: calc(var(--radius) + 14px);   /* rounded-3xl */
+}
+
+/* ─── Semantic tokens ────────────────────────────────────────────────────── */
+:root {
+  /* The single radius knob — change this and the whole rounded-* scale follows.
+     Try: 4px (sharp) · 8px (subtle) · 14px (current) · 20px (soft) · 28px (pill-like). */
+  --radius: 22px;
+
+  /* Backgrounds */
+  --background: #fafaf8;
+  --surface:    #f0f0ec;
+
+  /* Text */
+  --foreground:       #111111;
+  --muted:            #666666;
+  --field-foreground: #111111;
+  --snow:             #fafaf8;
+
+  /* Borders */
+  --border: #e5e5e0;
+
+  /* Accent */
+  --success:            #16a34a;
+  --success-foreground: #ffffff;
+  --danger:             #dc2626;
+}
+
+/* ─── Base ───────────────────────────────────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+}

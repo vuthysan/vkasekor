@@ -5,13 +5,13 @@ import { matchingRulesForAge } from "~/lib/rule-matcher"
 import { formatAlertMessage } from "~/lib/khmer-formatter"
 import { sendTelegramMessage } from "~/lib/telegram"
 import type { Asset, Rule } from "~/types"
+import { ASSET_CONFIG } from "~/lib/asset-config"
 
 interface RunArgs {
   botToken: string
   chatId: string
 }
 
-const HARVEST_DAY = 60
 
 function batchLabel(asset: Asset): string {
   return asset._id.toHexString().slice(-6).toUpperCase()
@@ -82,7 +82,7 @@ export async function runDailyCheck(args: RunArgs): Promise<void> {
     today,
   )
 
-  const allRules = await collections.rules().find({ asset_type: "chicken" }).toArray()
+  const allRules = await collections.rules().find({}).toArray()
   const activeAssets = await collections.assets().find({ status: "active" }).toArray()
 
   for (const processingDay of daysToProcess) {
@@ -94,7 +94,8 @@ export async function runDailyCheck(args: RunArgs): Promise<void> {
       for (const rule of rules) {
         await processOneRule(asset, rule, processingDay, isCatchUp, args)
       }
-      if (age >= HARVEST_DAY && asset.status === "active") {
+      const harvestDay = ASSET_CONFIG[asset.type]?.defaultHarvestDays ?? 60
+      if (age >= harvestDay && asset.status === "active") {
         await collections.assets().updateOne(
           { _id: asset._id },
           { $set: { status: "harvested", updated_at: new Date() } },

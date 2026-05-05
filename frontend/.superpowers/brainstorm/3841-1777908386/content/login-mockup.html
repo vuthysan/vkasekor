@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Login Mockup — Kasekor Helper</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #e8e5e0; display: flex; align-items: center; justify-content: center; min-height: 100vh; font-family: 'DM Sans', sans-serif; padding: 24px; }
+
+  .frame-label { text-align:center; color:#888; font-size:12px; letter-spacing:1px; margin-bottom:12px; font-family: 'DM Sans', sans-serif; }
+
+  .window {
+    width: 900px;
+    max-width: 100%;
+    height: 560px;
+    border-radius: 16px;
+    overflow: hidden;
+    display: flex;
+    box-shadow: 0 32px 80px rgba(0,0,0,0.28), 0 0 0 1px rgba(0,0,0,0.08);
+  }
+
+  /* LEFT PANEL */
+  .left {
+    width: 45%;
+    background: #0f3d1f;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: space-between;
+    padding: 48px 44px;
+    position: relative;
+    overflow: hidden;
+  }
+  .left::before {
+    content: '';
+    position: absolute;
+    top: -80px; right: -80px;
+    width: 300px; height: 300px;
+    background: radial-gradient(circle, rgba(34,197,94,0.18) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+  .left::after {
+    content: '';
+    position: absolute;
+    bottom: -60px; left: -60px;
+    width: 260px; height: 260px;
+    background: radial-gradient(circle, rgba(134,239,172,0.10) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+  .brand {
+    position: relative; z-index: 1;
+  }
+  .brand-icon {
+    width: 48px; height: 48px;
+    background: #22c55e;
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 24px;
+  }
+  .brand-icon svg { width: 26px; height: 26px; }
+  .brand-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 32px;
+    font-weight: 900;
+    color: #fff;
+    line-height: 1.05;
+    letter-spacing: -1px;
+    margin-bottom: 12px;
+  }
+  .brand-tag {
+    display: inline-block;
+    background: rgba(34,197,94,0.15);
+    border: 1px solid rgba(34,197,94,0.3);
+    color: #86efac;
+    font-size: 10px;
+    letter-spacing: 2px;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-family: 'DM Sans', sans-serif;
+  }
+
+  .left-footer {
+    position: relative; z-index: 1;
+    color: rgba(255,255,255,0.3);
+    font-size: 12px;
+  }
+
+  /* RIGHT PANEL */
+  .right {
+    flex: 1;
+    background: #fafaf8;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 56px 48px;
+  }
+  .form-container { width: 100%; max-width: 320px; }
+
+  .form-heading {
+    font-family: 'Playfair Display', serif;
+    font-size: 26px;
+    font-weight: 700;
+    color: #111;
+    margin-bottom: 6px;
+    letter-spacing: -0.5px;
+  }
+  .form-sub {
+    color: #999;
+    font-size: 13px;
+    margin-bottom: 36px;
+  }
+
+  .field { margin-bottom: 18px; }
+  .field label {
+    display: block;
+    font-size: 11px;
+    font-weight: 600;
+    color: #666;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    margin-bottom: 7px;
+  }
+  .field input {
+    width: 100%;
+    background: #fff;
+    border: 1.5px solid #e5e5e0;
+    border-radius: 8px;
+    padding: 11px 14px;
+    font-size: 14px;
+    color: #333;
+    font-family: 'DM Sans', sans-serif;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  .field input:focus { border-color: #16a34a; }
+  .field input::placeholder { color: #ccc; }
+
+  .btn {
+    width: 100%;
+    background: #0f3d1f;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 13px;
+    font-size: 14px;
+    font-weight: 600;
+    font-family: 'DM Sans', sans-serif;
+    cursor: pointer;
+    margin-top: 8px;
+    letter-spacing: 0.3px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: background 0.15s;
+  }
+  .btn:hover { background: #14532d; }
+  .btn svg { width: 16px; height: 16px; }
+
+  .form-footer {
+    text-align: center;
+    margin-top: 28px;
+    color: #bbb;
+    font-size: 11px;
+  }
+</style>
+</head>
+<body>
+<div>
+  <div class="frame-label">MOCKUP PREVIEW — KASEKOR HELPER LOGIN</div>
+  <div class="window">
+
+    <!-- LEFT BRAND PANEL -->
+    <div class="left">
+      <div class="brand">
+        <div class="brand-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10"/>
+            <path d="M12 6v6l4 2"/>
+          </svg>
+        </div>
+        <div class="brand-name">Kasekor<br>Helper</div>
+        <div class="brand-tag">TEAM PORTAL</div>
+      </div>
+      <div class="left-footer">Internal use only · © 2026</div>
+    </div>
+
+    <!-- RIGHT FORM PANEL -->
+    <div class="right">
+      <div class="form-container">
+        <div class="form-heading">Welcome back</div>
+        <div class="form-sub">Sign in to your team account</div>
+
+        <div class="field">
+          <label>Email</label>
+          <input type="email" placeholder="you@kasekor.com">
+        </div>
+        <div class="field">
+          <label>Password</label>
+          <input type="password" placeholder="••••••••">
+        </div>
+
+        <button class="btn">
+          Sign In
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M5 12h14M12 5l7 7-7 7"/>
+          </svg>
+        </button>
+
+        <div class="form-footer">Access restricted to authorized team members</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+</body>
+</html>

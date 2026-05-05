@@ -1,5 +1,6 @@
 import type { Asset, Rule, Severity } from "~/types"
 import { toKhmerNumerals } from "~/lib/khmer-numerals"
+import { ASSET_CONFIG } from "~/lib/asset-config"
 
 const SEVERITY_BADGE: Record<Severity, string> = {
   critical: "🚨 សំខាន់",
@@ -15,6 +16,7 @@ interface FormatArgs {
 }
 
 export function formatAlertMessage({ asset, rule, batchLabel, catchUp }: FormatArgs): string {
+  const config = ASSET_CONFIG[asset.type]
   const dayKh = toKhmerNumerals(rule.day_offset)
   const qtyKh = toKhmerNumerals(asset.quantity_current)
   const ageKh = toKhmerNumerals(rule.day_offset)
@@ -28,11 +30,11 @@ export function formatAlertMessage({ asset, rule, batchLabel, catchUp }: FormatA
     .join("\n")
 
   return [
-    `${prefix}🐔 ថ្ងៃទី ${dayKh} — Batch #${batchLabel}`,
+    `${prefix}${config.emoji} ថ្ងៃទី ${dayKh} — Batch #${batchLabel}`,
     "━━━━━━━━━━━━━━━━━━━━━",
     `[${badge}] ${rule.title_kh}`,
     "",
-    `ចំនួនមាន់: ${qtyKh} ក្បាល`,
+    `ចំនួន${config.labelKh}: ${qtyKh} ${config.unitKh}`,
     `អាយុ: ${ageKh} ថ្ងៃ`,
     "",
     "📋 របៀបធ្វើ:",

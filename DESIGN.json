@@ -1,0 +1,208 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-05-05T00:00:00Z",
+  "title": "Design System: Kasekor Helper",
+  "extensions": {
+    "colorMeta": {
+      "canopy-deep": {
+        "role": "primary",
+        "displayName": "Deep Canopy",
+        "canonical": "oklch(22% 0.085 145)",
+        "tonalRamp": [
+          "oklch(10% 0.04 145)",
+          "oklch(15% 0.06 145)",
+          "oklch(22% 0.085 145)",
+          "oklch(30% 0.10 145)",
+          "oklch(40% 0.12 145)",
+          "oklch(55% 0.11 145)",
+          "oklch(70% 0.09 145)",
+          "oklch(85% 0.05 145)"
+        ]
+      },
+      "field-green": {
+        "role": "primary",
+        "displayName": "Field Green",
+        "canonical": "oklch(57% 0.19 152)",
+        "tonalRamp": [
+          "oklch(20% 0.07 152)",
+          "oklch(30% 0.11 152)",
+          "oklch(40% 0.15 152)",
+          "oklch(50% 0.18 152)",
+          "oklch(57% 0.19 152)",
+          "oklch(65% 0.17 152)",
+          "oklch(78% 0.12 152)",
+          "oklch(90% 0.07 152)"
+        ]
+      },
+      "sprout": {
+        "role": "secondary",
+        "displayName": "Sprout",
+        "canonical": "oklch(67% 0.22 152)",
+        "tonalRamp": [
+          "oklch(20% 0.07 152)",
+          "oklch(30% 0.11 152)",
+          "oklch(42% 0.16 152)",
+          "oklch(52% 0.20 152)",
+          "oklch(67% 0.22 152)",
+          "oklch(76% 0.19 152)",
+          "oklch(85% 0.13 152)",
+          "oklch(93% 0.07 152)"
+        ]
+      },
+      "rice-parchment": {
+        "role": "neutral",
+        "displayName": "Rice Parchment",
+        "canonical": "oklch(97% 0.006 100)",
+        "tonalRamp": [
+          "oklch(40% 0.010 100)",
+          "oklch(55% 0.010 100)",
+          "oklch(65% 0.010 100)",
+          "oklch(75% 0.008 100)",
+          "oklch(83% 0.008 100)",
+          "oklch(90% 0.007 100)",
+          "oklch(94% 0.007 100)",
+          "oklch(97% 0.006 100)"
+        ]
+      },
+      "sage-mist": {
+        "role": "neutral",
+        "displayName": "Sage Mist",
+        "canonical": "oklch(71% 0.04 155)",
+        "tonalRamp": [
+          "oklch(20% 0.03 155)",
+          "oklch(35% 0.04 155)",
+          "oklch(48% 0.04 155)",
+          "oklch(58% 0.04 155)",
+          "oklch(71% 0.04 155)",
+          "oklch(80% 0.03 155)",
+          "oklch(88% 0.02 155)",
+          "oklch(94% 0.01 155)"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display", "purpose": "Brand wordmark only — 'Kasekor Helper'. Never used for content headings." },
+      "headline": { "displayName": "Headline", "purpose": "Page section titles. One per viewport zone." },
+      "title": { "displayName": "Title", "purpose": "Component headings, table headers, sidebar labels." },
+      "body": { "displayName": "Body", "purpose": "Table content, form values, meta text. Max 65-75ch." },
+      "label": { "displayName": "Label", "purpose": "Form field labels, column headers, badge text. Always uppercase." }
+    },
+    "shadows": [
+      {
+        "name": "lift",
+        "value": "0 32px 80px rgba(0,0,0,0.28), 0 0 0 1px rgba(0,0,0,0.08)",
+        "purpose": "Login card and modals only. Signals 'this surface is above the application.'"
+      },
+      {
+        "name": "inset-ring",
+        "value": "0 4px 20px rgba(0,0,0,0.03), 0 0 0 1px rgba(0,0,0,0.04)",
+        "purpose": "Stat summary cells. Nearly just a 1px border — separates without lifting."
+      }
+    ],
+    "motion": [
+      {
+        "name": "ease-standard",
+        "value": "cubic-bezier(0.0, 0.0, 0.2, 1)",
+        "purpose": "Default easing for state transitions (hover, focus)."
+      },
+      {
+        "name": "duration-fast",
+        "value": "120ms",
+        "purpose": "Navigation item hover, input border shift."
+      },
+      {
+        "name": "duration-base",
+        "value": "180ms",
+        "purpose": "Button background transitions."
+      },
+      {
+        "name": "duration-enter",
+        "value": "320ms",
+        "purpose": "Page content entrance — opacity + small Y translate."
+      }
+    ],
+    "breakpoints": [
+      { "name": "sm", "value": "640px" },
+      { "name": "md", "value": "768px" },
+      { "name": "lg", "value": "1024px" },
+      { "name": "xl", "value": "1280px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Main action button. Deep Canopy fill, precise hover shift. Used for 'Register Batch' and other primary actions.",
+      "html": "<button class=\"ds-btn-primary\">Register Batch <svg class=\"ds-btn-icon\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M5 12h14M12 5l7 7-7 7\"/></svg></button>",
+      "css": ".ds-btn-primary { display: inline-flex; align-items: center; gap: 6px; background: #0f3d1f; color: #fafaf8; border: none; border-radius: 8px; padding: 10px 16px; font-family: 'DM Sans', system-ui, sans-serif; font-size: 0.875rem; font-weight: 600; line-height: 1.4; cursor: pointer; transition: background 180ms cubic-bezier(0,0,0.2,1); outline: none; } .ds-btn-primary:hover { background: #165a2d; } .ds-btn-primary:focus-visible { outline: 2px solid #16a34a; outline-offset: 2px; } .ds-btn-primary:active { background: #0d3319; } .ds-btn-icon { width: 16px; height: 16px; flex-shrink: 0; }"
+    },
+    {
+      "name": "Input Field",
+      "kind": "input",
+      "refersTo": "input-default",
+      "description": "Standard text input with uppercase label. Focus border shifts to Field Green. Used in batch registration form.",
+      "html": "<div class=\"ds-field\"><label class=\"ds-field-label\">Batch Name</label><input class=\"ds-field-input\" type=\"text\" placeholder=\"e.g. Broiler Flock A\" /></div>",
+      "css": ".ds-field { display: flex; flex-direction: column; gap: 6px; } .ds-field-label { font-family: 'DM Sans', system-ui, sans-serif; font-size: 0.6875rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: #666666; } .ds-field-input { background: #ffffff; border: 1.5px solid #e5e5e0; border-radius: 8px; padding: 10px 12px; font-family: 'DM Sans', system-ui, sans-serif; font-size: 0.875rem; color: #333333; outline: none; transition: border-color 120ms cubic-bezier(0,0,0.2,1); width: 100%; box-sizing: border-box; } .ds-field-input::placeholder { color: #999999; } .ds-field-input:hover { border-color: rgba(22,163,74,0.6); } .ds-field-input:focus { border-color: #16a34a; }"
+    },
+    {
+      "name": "Sidebar Navigation",
+      "kind": "nav",
+      "refersTo": "nav-item-active",
+      "description": "Sidebar nav items on Deep Canopy background. Active state: filled Field Green. Hover: Shadow Canopy.",
+      "html": "<nav class=\"ds-sidebar-nav\"><a class=\"ds-nav-item ds-nav-active\" href=\"#\"><svg class=\"ds-nav-icon\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"3\" y=\"3\" width=\"7\" height=\"7\" rx=\"1\"/><rect x=\"14\" y=\"3\" width=\"7\" height=\"7\" rx=\"1\"/><rect x=\"3\" y=\"14\" width=\"7\" height=\"7\" rx=\"1\"/><rect x=\"14\" y=\"14\" width=\"7\" height=\"7\" rx=\"1\"/></svg>Dashboard</a><a class=\"ds-nav-item\" href=\"#\"><svg class=\"ds-nav-icon\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><circle cx=\"12\" cy=\"8\" r=\"6\"/><path d=\"M6 20v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2\"/></svg>Assets</a><a class=\"ds-nav-item\" href=\"#\"><svg class=\"ds-nav-icon\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"3\" y=\"4\" width=\"18\" height=\"18\" rx=\"2\"/><line x1=\"16\" y1=\"2\" x2=\"16\" y2=\"6\"/><line x1=\"8\" y1=\"2\" x2=\"8\" y2=\"6\"/><line x1=\"3\" y1=\"10\" x2=\"21\" y2=\"10\"/></svg>Schedules</a></nav>",
+      "css": ".ds-sidebar-nav { display: flex; flex-direction: column; gap: 6px; padding: 0 16px; } .ds-nav-item { display: flex; align-items: center; gap: 12px; border-radius: 12px; padding: 12px 16px; font-family: 'DM Sans', system-ui, sans-serif; font-size: 0.875rem; font-weight: 600; color: #a3b8aa; text-decoration: none; background: transparent; transition: background 120ms cubic-bezier(0,0,0.2,1), color 120ms cubic-bezier(0,0,0.2,1); } .ds-nav-item:hover { background: #1a4a2a; color: #ffffff; } .ds-nav-active { background: #16a34a !important; color: #ffffff !important; } .ds-nav-icon { width: 20px; height: 20px; flex-shrink: 0; }"
+    },
+    {
+      "name": "Status Badge: Healthy",
+      "kind": "chip",
+      "refersTo": "status-healthy",
+      "description": "Pill badge for batch status. Three variants: Healthy, At Risk, Harvesting.",
+      "html": "<div style=\"display:flex;gap:8px;align-items:center;\"><span class=\"ds-badge ds-badge-healthy\">Healthy</span><span class=\"ds-badge ds-badge-risk\">At Risk</span><span class=\"ds-badge ds-badge-harvest\">Harvesting</span></div>",
+      "css": ".ds-badge { display: inline-flex; align-items: center; border-radius: 9999px; padding: 2px 10px; font-family: 'DM Sans', system-ui, sans-serif; font-size: 0.75rem; font-weight: 600; border: 1px solid transparent; line-height: 1.5; } .ds-badge-healthy { background: #f0fdf4; color: #16a34a; border-color: #bbf7d0; } .ds-badge-risk { background: #fef2f2; color: #dc2626; border-color: #fecaca; } .ds-badge-harvest { background: #fffbeb; color: #ca8a04; border-color: #fde68a; }"
+    },
+    {
+      "name": "Stat Summary Cell",
+      "kind": "card",
+      "refersTo": "button-primary",
+      "description": "Individual metric cell in the stats row. Playfair value, label type heading, trend indicator. Inset Ring shadow.",
+      "html": "<div class=\"ds-stat-row\"><div class=\"ds-stat-cell\"><p class=\"ds-stat-label\">Total Assets</p><p class=\"ds-stat-value\">1,820</p><p class=\"ds-stat-trend ds-trend-pos\">+12% from last month</p></div><div class=\"ds-stat-cell\"><p class=\"ds-stat-label\">Pending Alerts</p><p class=\"ds-stat-value\">3</p><p class=\"ds-stat-trend ds-trend-neg\">requires attention</p></div></div>",
+      "css": ".ds-stat-row { display: flex; gap: 24px; } .ds-stat-cell { display: flex; flex-direction: column; gap: 4px; background: #fafaf8; border-radius: 12px; padding: 20px 24px; box-shadow: 0 4px 20px rgba(0,0,0,0.03), 0 0 0 1px rgba(0,0,0,0.04); min-width: 140px; } .ds-stat-label { font-family: 'DM Sans', system-ui, sans-serif; font-size: 0.6875rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: #666666; margin: 0; } .ds-stat-value { font-family: 'Playfair Display', Georgia, serif; font-size: 1.75rem; font-weight: 700; color: #111111; line-height: 1.2; margin: 4px 0 0; } .ds-stat-trend { font-family: 'DM Sans', system-ui, sans-serif; font-size: 0.75rem; font-weight: 600; margin: 2px 0 0; } .ds-trend-pos { color: #16a34a; } .ds-trend-neg { color: #dc2626; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Agronomist's Notebook",
+    "overview": "Kasekor Helper's visual language is the agronomist's field notebook: dense, legible, trusted. The interface is a working document, not a showpiece. Every element earns its space the way a measured entry earns its row — no decoration that isn't load-bearing, no whitespace that doesn't serve hierarchy.\n\nThe color strategy is committed: a deep forest-green sidebar occupies ~30% of the viewport at all times, anchoring the space with unmistakable brand weight. The content surface is warm parchment — the specific off-white of sun-dried field paper. Status signals are the only place where color carries semantic load; everywhere else it recedes.\n\nThis system explicitly rejects consumer agri-app aesthetics and generic SaaS dashboard templates.",
+    "keyCharacteristics": [
+      "Deep canopy green anchors the navigation; warm parchment grounds the content area",
+      "Playfair Display for display and headings; DM Sans for all UI text",
+      "Status indicators are the only semantic color signal; all other color is structural",
+      "Flat content surface with structural depth reserved for modal/overlay contexts",
+      "Transitions are precise and brief; nothing draws attention to itself"
+    ],
+    "rules": [
+      { "name": "The One Signal Rule", "body": "Color carries semantic meaning only in status indicators. Using green decoratively elsewhere dilutes the signal.", "section": "colors" },
+      { "name": "The Weight Contrast Rule", "body": "No middle ground between Playfair and DM Sans. No 500-weight middle. If something matters, it is headline-level (Playfair 700) or body/title (DM Sans).", "section": "typography" },
+      { "name": "The Floor Rule", "body": "Nothing in the content area floats above the surface except modals and the login card. If tempted to add a shadow, ask whether it belongs in the floor or above the application.", "section": "elevation" },
+      { "name": "The No-Stripe Rule", "body": "Active navigation state is expressed through a filled background, not a left- or right-side border stripe.", "section": "components" }
+    ],
+    "dos": [
+      "Do use Playfair Display 700/900 for headings and brand elements only",
+      "Do express active navigation state with a filled Field Green background across the full nav item width",
+      "Do use the three-part status badge system (background + text + border) for Healthy, At Risk, and Harvesting",
+      "Do let the sidebar carry the brand weight; keep the content area calm and neutral",
+      "Do use Inset Ring shadow on stat cells only; all other content-area elements are flat",
+      "Do maintain at least a 1.25x size ratio between adjacent type hierarchy levels"
+    ],
+    "donts": [
+      "Don't use cartoon farm illustrations, oversized emoji, or gamified progress indicators",
+      "Don't reach for blue or purple; the brand is anchored in forest green and warm neutrals",
+      "Don't use gradient text; headings and status labels use a single solid color",
+      "Don't use a border-left or border-right greater than 1px as a colored accent on any element",
+      "Don't apply the Lift shadow to content-area components; it is reserved for login card and modals",
+      "Don't build identical icon-heading-text card grids",
+      "Don't use Sprout (#22c55e) in the content area as decoration",
+      "Don't write encouragement copy; state facts"
+    ]
+  }
+}

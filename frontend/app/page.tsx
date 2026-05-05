@@ -1,155 +1,266 @@
 "use client"
 
-import { Input, Button, TextField, Label } from "@heroui/react"
+import { useState } from "react"
 import { motion } from "motion/react"
+import { Eye, EyeOff } from "lucide-react"
+import {
+  Button,
+  FieldError,
+  Form,
+  Input,
+  Label,
+  Spinner,
+  TextField,
+} from "@heroui/react"
 
 export default function LoginPage() {
+  const [showPassword, setShowPassword] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
+
+  const handleSubmit = async (e: React.SyntheticEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    setIsLoading(true)
+    await new Promise((r) => setTimeout(r, 1200))
+    setIsLoading(false)
+  }
+
   return (
-    <div className="flex h-screen w-screen items-center justify-center bg-[#e8e5e0] p-6">
-      <div
-        className="flex w-full max-w-[900px] overflow-hidden rounded-2xl"
-        style={{ boxShadow: "0 32px 80px rgba(0,0,0,0.28), 0 0 0 1px rgba(0,0,0,0.08)" }}
+    <div className="min-h-screen flex">
+      {/* Left panel — brand presence */}
+      <motion.div
+        initial={{ x: "-100%" }}
+        animate={{ x: 0 }}
+        transition={{ duration: 0.75, ease: [0.22, 1, 0.36, 1] }}
+        className="hidden lg:flex lg:w-[52%] relative overflow-hidden flex-col justify-between p-12"
+        style={{ backgroundColor: "var(--color-canopy-deep)" }}
       >
-        {/* Left brand panel */}
+        {/* Noise texture */}
         <div
-          className="relative flex w-[45%] flex-col justify-between overflow-hidden p-12"
-          style={{ background: "#0f3d1f" }}
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E")`,
+            backgroundSize: "300px 300px",
+          }}
+        />
+
+        {/* Gradient mesh */}
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            background:
+              "radial-gradient(ellipse 70% 55% at 15% 85%, rgba(22,163,74,0.18) 0%, transparent 55%), radial-gradient(ellipse 55% 70% at 85% 15%, rgba(34,197,94,0.1) 0%, transparent 55%)",
+          }}
+        />
+
+        {/* Ghost Khmer letterform */}
+        <div
+          className="absolute -bottom-6 -right-4 select-none pointer-events-none"
+          style={{
+            fontFamily: "var(--font-kantumruy)",
+            fontSize: "clamp(160px, 22vw, 280px)",
+            fontWeight: 700,
+            color: "transparent",
+            WebkitTextStroke: "1.5px rgba(134,239,172,0.1)",
+            lineHeight: 1,
+          }}
         >
-          {/* Top-right glow */}
-          <div
-            className="pointer-events-none absolute -right-20 -top-20 h-72 w-72 rounded-full"
-            style={{ background: "radial-gradient(circle, rgba(34,197,94,0.18) 0%, transparent 70%)" }}
-          />
-          {/* Bottom-left glow */}
-          <div
-            className="pointer-events-none absolute -bottom-16 -left-16 h-64 w-64 rounded-full"
-            style={{ background: "radial-gradient(circle, rgba(134,239,172,0.10) 0%, transparent 70%)" }}
-          />
-
-          {/* Brand identity */}
-          <div className="relative z-10">
-            {/* Icon */}
-            <div className="mb-6 flex h-12 w-12 items-center justify-center rounded-xl bg-[#22c55e]">
-              <svg
-                className="h-6 w-6"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="white"
-                strokeWidth="2.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
-                <polyline points="9 22 9 12 15 12 15 22" />
-              </svg>
-            </div>
-
-            {/* Wordmark */}
-            <h1
-              className="mb-3 text-4xl font-black leading-none tracking-tight text-white"
-              style={{ fontFamily: "var(--font-playfair)" }}
-            >
-              Kasekor<br />Helper
-            </h1>
-
-            {/* Badge */}
-            <span
-              className="inline-block rounded px-2.5 py-1 text-[10px] font-semibold tracking-[2px]"
-              style={{
-                background: "rgba(34,197,94,0.15)",
-                border: "1px solid rgba(34,197,94,0.3)",
-                color: "#86efac",
-                fontFamily: "var(--font-dm-sans)",
-              }}
-            >
-              TEAM PORTAL
-            </span>
-          </div>
-
-          {/* Footer */}
-          <p
-            className="relative z-10 text-xs"
-            style={{ color: "rgba(255,255,255,0.3)", fontFamily: "var(--font-dm-sans)" }}
-          >
-            Internal use only · © 2026
-          </p>
+          ក
         </div>
 
-        {/* Right form panel */}
+        {/* Top — wordmark */}
+        <div className="relative z-10">
+          <span
+            className="block text-xs tracking-widest uppercase mb-3"
+            style={{
+              color: "var(--color-sprout-light)",
+              fontFamily: "var(--font-inter)",
+              opacity: 0.55,
+            }}
+          >
+            Internal Portal
+          </span>
+          <h2
+            style={{
+              fontFamily: "var(--font-playfair)",
+              fontSize: "clamp(36px, 4.5vw, 54px)",
+              fontWeight: 700,
+              color: "var(--color-rice-parchment)",
+              lineHeight: 1.08,
+              letterSpacing: "-0.02em",
+            }}
+          >
+            Kasekor
+            <br />
+            <span style={{ color: "var(--color-sprout)" }}>Helper</span>
+          </h2>
+        </div>
+
+        {/* Bottom — tagline */}
+        <div className="relative z-10">
+          <div
+            className="w-10 h-px mb-5"
+            style={{ backgroundColor: "var(--color-sprout)", opacity: 0.45 }}
+          />
+          <p
+            className="text-sm leading-relaxed max-w-65"
+            style={{
+              color: "var(--color-sage-mist)",
+              fontFamily: "var(--font-inter)",
+            }}
+          >
+            Farm batch management &amp; daily operations for Cambodian
+            agricultural teams.
+          </p>
+        </div>
+      </motion.div>
+
+      {/* Right panel — form */}
+      <div
+        className="flex-1 flex items-center justify-center px-8 py-12"
+        style={{ backgroundColor: "var(--color-rice-parchment)" }}
+      >
         <motion.div
-          className="flex flex-1 flex-col items-center justify-center px-12 py-14"
-          style={{ background: "#fafaf8" }}
-          initial={{ opacity: 0, y: 16 }}
+          initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.45, ease: "easeOut" }}
+          transition={{ duration: 0.55, delay: 0.35, ease: [0.22, 1, 0.36, 1] }}
+          className="w-full max-w-85"
         >
-          <div className="w-full max-w-[320px]">
-            <h2
-              className="mb-1.5 text-2xl font-bold tracking-tight text-[#111]"
-              style={{ fontFamily: "var(--font-playfair)" }}
-            >
-              Welcome back
-            </h2>
+          {/* Mobile wordmark */}
+          <div className="lg:hidden mb-10">
             <p
-              className="mb-9 text-sm text-[#999]"
-              style={{ fontFamily: "var(--font-dm-sans)" }}
+              style={{
+                fontFamily: "var(--font-playfair)",
+                fontSize: "26px",
+                fontWeight: 700,
+                color: "var(--color-canopy-deep)",
+              }}
             >
-              Sign in to your team account
-            </p>
-
-            <form className="flex flex-col gap-4" onSubmit={(e) => e.preventDefault()}>
-              {/* Email field */}
-              <TextField className="flex flex-col gap-1.5">
-                <Label className="text-[11px] font-semibold tracking-[0.8px] uppercase text-[#666]">
-                  Email
-                </Label>
-                <Input
-                  type="email"
-                  placeholder="you@kasekor.com"
-                  className="w-full rounded-lg border-[1.5px] border-[#e5e5e0] bg-white px-3 py-2.5 text-sm text-[#333] placeholder:text-[#ccc] outline-none hover:border-[#16a34a] focus-visible:border-[#16a34a]"
-                />
-              </TextField>
-
-              {/* Password field */}
-              <TextField className="flex flex-col gap-1.5">
-                <Label className="text-[11px] font-semibold tracking-[0.8px] uppercase text-[#666]">
-                  Password
-                </Label>
-                <Input
-                  type="password"
-                  placeholder="••••••••"
-                  className="w-full rounded-lg border-[1.5px] border-[#e5e5e0] bg-white px-3 py-2.5 text-sm text-[#333] placeholder:text-[#ccc] outline-none hover:border-[#16a34a] focus-visible:border-[#16a34a]"
-                />
-              </TextField>
-
-              <Button
-                type="submit"
-                fullWidth
-                className="mt-1 flex items-center justify-center gap-2 rounded-lg bg-[#0f3d1f] py-2.5 text-sm font-semibold text-white"
-                style={{ fontFamily: "var(--font-dm-sans)" }}
-              >
-                Sign In
-                <svg
-                  className="h-4 w-4"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <path d="M5 12h14M12 5l7 7-7 7" />
-                </svg>
-              </Button>
-            </form>
-
-            <p
-              className="mt-7 text-center text-[11px] text-[#bbb]"
-              style={{ fontFamily: "var(--font-dm-sans)" }}
-            >
-              Access restricted to authorized team members
+              Kasekor{" "}
+              <span style={{ color: "var(--color-field-green)" }}>Helper</span>
             </p>
           </div>
+
+          {/* Heading */}
+          <div className="mb-9">
+            <h1
+              className="mb-1.5"
+              style={{
+                fontFamily: "var(--font-playfair)",
+                fontSize: "clamp(26px, 3.5vw, 30px)",
+                fontWeight: 700,
+                color: "var(--color-canopy-deep)",
+                lineHeight: 1.15,
+                letterSpacing: "-0.01em",
+              }}
+            >
+              Welcome back
+            </h1>
+            <p
+              className="text-sm"
+              style={{
+                color: "var(--color-sage-mist)",
+                fontFamily: "var(--font-inter)",
+              }}
+            >
+              Sign in to your admin account
+            </p>
+          </div>
+
+          {/* Form */}
+          <Form
+            className="space-y-5"
+            onSubmit={handleSubmit}
+          >
+            {/* Email */}
+            <TextField isRequired name="email" type="email" className="w-full">
+              <Label className="block text-[11px] font-medium tracking-widest uppercase mb-1.5"
+                style={{ color: "var(--color-canopy-deep)", fontFamily: "var(--font-inter)", opacity: 0.7 }}
+              >
+                Email
+              </Label>
+              <Input
+                placeholder="admin@kasekor.com"
+                className="w-full px-4 py-2.75 text-sm rounded-md outline-none transition-all duration-150 bg-white"
+                style={{
+                  border: "1px solid var(--color-dried-grass)",
+                  color: "var(--color-canopy-deep)",
+                  fontFamily: "var(--font-inter)",
+                }}
+              />
+              <FieldError className="text-xs mt-1"
+                style={{ color: "#dc2626", fontFamily: "var(--font-inter)" }}
+              />
+            </TextField>
+
+            {/* Password */}
+            <TextField isRequired name="password" type={showPassword ? "text" : "password"} className="w-full">
+              <div className="flex items-center justify-between mb-1.5">
+                <Label className="block text-[11px] font-medium tracking-widest uppercase"
+                  style={{ color: "var(--color-canopy-deep)", fontFamily: "var(--font-inter)", opacity: 0.7 }}
+                >
+                  Password
+                </Label>
+                <button
+                  type="button"
+                  tabIndex={-1}
+                  onClick={() => setShowPassword((v) => !v)}
+                  className="flex items-center gap-1 text-xs transition-colors"
+                  style={{ color: "var(--color-sage-mist)", fontFamily: "var(--font-inter)" }}
+                >
+                  {showPassword ? <EyeOff size={13} /> : <Eye size={13} />}
+                  {showPassword ? "Hide" : "Show"}
+                </button>
+              </div>
+              <Input
+                placeholder="••••••••"
+                className="w-full px-4 py-2.75 text-sm rounded-md outline-none transition-all duration-150 bg-white"
+                style={{
+                  border: "1px solid var(--color-dried-grass)",
+                  color: "var(--color-canopy-deep)",
+                  fontFamily: "var(--font-inter)",
+                }}
+              />
+              <FieldError className="text-xs mt-1"
+                style={{ color: "#dc2626", fontFamily: "var(--font-inter)" }}
+              />
+            </TextField>
+
+            {/* Submit */}
+            <Button
+              type="submit"
+              isDisabled={isLoading}
+              variant="primary"
+              fullWidth
+              className="py-2.75 text-sm font-medium tracking-wide mt-1 rounded-md"
+              style={{
+                backgroundColor: "var(--color-canopy-deep)",
+                color: "var(--color-rice-parchment)",
+                fontFamily: "var(--font-inter)",
+                letterSpacing: "0.04em",
+                opacity: isLoading ? 0.72 : 1,
+              }}
+            >
+              {isLoading ? (
+                <span className="flex items-center justify-center gap-2">
+                  <Spinner size="sm" />
+                  Signing in…
+                </span>
+              ) : (
+                "Sign In"
+              )}
+            </Button>
+          </Form>
+
+          <p
+            className="mt-10 text-xs text-center"
+            style={{
+              color: "var(--color-sage-mist)",
+              fontFamily: "var(--font-inter)",
+              opacity: 0.7,
+            }}
+          >
+            Kasekor Helper · Admin Portal
+          </p>
         </motion.div>
       </div>
     </div>
