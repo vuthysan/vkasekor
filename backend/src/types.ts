@@ -10,7 +10,8 @@ export interface User {
   last_login_at: Date
 }
 
-export type AssetType = "chicken" | "pig" | "duck" | "cucumber" | "cabbage" | "tomato"
+export type AssetType = "chicken" | "pig" | "duck" | "cucumber" | "cabbage" | "tomato" | "lemon" | "cow"
+export type LedgerType = "expense" | "revenue" | "death" | "sold" | "born"
 export type Breed = string
 export type AssetStatus = "active" | "harvested" | "archived"
 
@@ -24,9 +25,22 @@ export interface Asset {
   expected_harvest_date: Date
   status: AssetStatus
   notes: string
+  parent_asset_id?: ObjectId  // set when this batch was born from another batch
   created_by: ObjectId
   created_at: Date
   updated_at: Date
+}
+
+export interface LedgerEntry {
+  _id: ObjectId
+  asset_id: ObjectId          // which batch this belongs to
+  type: LedgerType
+  quantity?: number           // animals affected (death, sold, born)
+  amount_usd?: number         // money value (expense, revenue)
+  note_kh?: string            // optional Khmer note e.g. ចំណាយថ្នាំ
+  child_asset_id?: ObjectId   // set when type === "born", links to new child batch
+  recorded_at: Date
+  created_by: ObjectId
 }
 
 export type RuleCategory = "vaccine" | "feed" | "health" | "housing" | "harvest" | "fertilizer" | "pesticide" | "irrigation" | "planting"
@@ -39,9 +53,7 @@ export interface Rule {
   category: RuleCategory
   severity: Severity
   title_kh: string
-  title_en: string
   instructions_kh: string
-  instructions_en: string
   source_page: number
 }
 

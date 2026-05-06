@@ -2,14 +2,15 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { LayoutDashboard, Tractor, CalendarRange, Settings, Sprout } from "lucide-react"
+import { LayoutDashboard, Tractor, CalendarRange, Settings, Sprout, DollarSign } from "lucide-react"
 
 const navigation = [
-  { name: "ទិដ្ឋភាពទូទៅ", href: "/overview", icon: LayoutDashboard },
-  { name: "ទ្រព្យសកម្ម", href: "/assets", icon: Tractor },
-  { name: "កាលវិភាគ", href: "/schedules", icon: CalendarRange },
-  { name: "ចំការ", href: "/farm", icon: Sprout },
-  { name: "ការកំណត់", href: "/settings", icon: Settings },
+  { name: "ទិដ្ឋភាពទូទៅ", href: "/overview",  icon: LayoutDashboard },
+  { name: "ទ្រព្យសកម្ម",  href: "/assets",    icon: Tractor },
+  { name: "កាលវិភាគ",    href: "/schedules",  icon: CalendarRange },
+  { name: "ហិរញ្ញវត្ថុ",  href: "/ledger",    icon: DollarSign },
+  { name: "ចំការ",        href: "/farm",       icon: Sprout },
+  { name: "ការកំណត់",    href: "/settings",   icon: Settings },
 ]
 
 interface SidebarProps {

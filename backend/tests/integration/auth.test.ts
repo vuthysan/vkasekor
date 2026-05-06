@@ -162,23 +162,16 @@ describe("POST /api/auth/password", () => {
     expect(res.status).toBe(401)
   })
 
-  it("session from password login is accepted by /me", async () => {
+  it("session from password login is accepted by /me without a users-collection row", async () => {
     const token = await signSession({ user_id: ADMIN_USER_ID }, JWT_SECRET)
-    const _id = new ObjectId(ADMIN_USER_ID)
-    await collections.users().insertOne({
-      _id,
-      telegram_id: 1,
-      telegram_username: "admin",
-      display_name: "Admin",
-      approved: true,
-      created_at: new Date(),
-      last_login_at: new Date(),
-    })
     const res = await buildApp().request("/api/auth/me", {
       headers: { Cookie: `session=${token}` },
     })
     expect(res.status).toBe(200)
     const body = await res.json()
+    expect(body.user.id).toBe(ADMIN_USER_ID)
+    expect(body.user.email).toBe(ADMIN_EMAIL)
+    expect(body.user.is_admin).toBe(true)
     expect(body.user.display_name).toBe("Admin")
   })
 })

@@ -98,6 +98,20 @@ export function authRoutes(cfg: AuthRouteConfig) {
 
   app.get("/me", requireAuth, async (c) => {
     const session = c.get("session")
+
+    // Admin password login does not seed a users-collection row; return a
+    // synthetic profile when the session matches the env-configured admin id.
+    if (session.user_id === cfg.adminUserId) {
+      return c.json({
+        user: {
+          id: cfg.adminUserId,
+          display_name: "Admin",
+          email: cfg.adminEmail,
+          is_admin: true,
+        },
+      })
+    }
+
     const user = await collections.users().findOne({ _id: new ObjectId(session.user_id) })
     if (!user) return c.json({ error: "not found" }, 404)
     return c.json({
@@ -106,6 +120,7 @@ export function authRoutes(cfg: AuthRouteConfig) {
         telegram_id: user.telegram_id,
         display_name: user.display_name,
         telegram_username: user.telegram_username,
+        is_admin: false,
       },
     })
   })

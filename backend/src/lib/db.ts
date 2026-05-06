@@ -1,5 +1,5 @@
 import { MongoClient, Db } from "mongodb"
-import type { User, Asset, Rule, Alert, SystemRecord } from "~/types"
+import type { User, Asset, Rule, Alert, SystemRecord, LedgerEntry } from "~/types"
 
 let client: MongoClient | null = null
 let db: Db | null = null
@@ -31,4 +31,5 @@ export const collections = {
   rules: () => getDb().collection<Rule>("rules"),
   alerts: () => getDb().collection<Alert>("alerts"),
   system: () => getDb().collection<SystemRecord>("system"),
+  ledger: () => getDb().collection<LedgerEntry>("ledger"),
 }

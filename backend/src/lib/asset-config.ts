@@ -44,4 +44,16 @@ export const ASSET_CONFIG: Record<AssetType, AssetMetadata> = {
     unitKh: "ដើម",
     defaultHarvestDays: 80,
   },
+  lemon: {
+    emoji: "🍋",
+    labelKh: "ក្រូចឆ្មារ",
+    unitKh: "ដើម",
+    defaultHarvestDays: 360,
+  },
+  cow: {
+    emoji: "🐄",
+    labelKh: "គោ",
+    unitKh: "ក្បាល",
+    defaultHarvestDays: 540,
+  },
 }

@@ -5,14 +5,16 @@ import { collections } from "~/lib/db"
 import { requireAuth } from "~/middleware/auth"
 import { addDays, startOfDayInPhnomPenh } from "~/lib/lifecycle"
 import { runBackfillForAsset } from "~/cron/daily-check"
+import { ASSET_CONFIG } from "~/lib/asset-config"
 import type { Asset } from "~/types"
 
 const CreateSchema = z.object({
-  type: z.literal("chicken"),
-  breed: z.enum(["broiler", "layer", "local"]),
+  type: z.enum(["chicken", "pig", "duck", "cucumber", "cabbage", "tomato", "lemon", "cow"]),
+  breed: z.string().min(1),
   quantity_initial: z.number().int().positive(),
   arrival_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
   notes: z.string().optional().default(""),
+  parent_asset_id: z.string().optional(), // for baby batches
 })
 
 const PatchSchema = z.object({
@@ -37,7 +39,8 @@ export function assetsRoutes(cfg: AssetsRouteConfig) {
 
     const session = c.get("session")
     const arrival = startOfDayInPhnomPenh(new Date(`${parsed.data.arrival_date}T00:00:00Z`))
-    const expected_harvest = addDays(arrival, 60)
+    const harvestDays = ASSET_CONFIG[parsed.data.type]?.defaultHarvestDays ?? 60
+    const expected_harvest = addDays(arrival, harvestDays)
     const now = new Date()
     const asset: Asset = {
       _id: new ObjectId(),
@@ -49,6 +52,9 @@ export function assetsRoutes(cfg: AssetsRouteConfig) {
       expected_harvest_date: expected_harvest,
       status: "active",
       notes: parsed.data.notes,
+      ...(parsed.data.parent_asset_id && ObjectId.isValid(parsed.data.parent_asset_id)
+        ? { parent_asset_id: new ObjectId(parsed.data.parent_asset_id) }
+        : {}),
       created_by: new ObjectId(session.user_id),
       created_at: now,
       updated_at: now,

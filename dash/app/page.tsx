@@ -1,21 +1,43 @@
 "use client"
 
 import { useState } from "react"
+import { useRouter } from "next/navigation"
 import { motion } from "motion/react"
 import { Eye, EyeOff, Loader2 } from "lucide-react"
 import { Button } from "~/components/ui/button"
 import { Input } from "~/components/ui/input"
 import { Label } from "~/components/ui/label"
+import { apiFetch, ApiError } from "~/lib/api"
 
 export default function LoginPage() {
+  const router = useRouter()
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
   const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   const handleSubmit = async (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault()
+    setError(null)
     setIsLoading(true)
-    await new Promise((r) => setTimeout(r, 1200))
-    setIsLoading(false)
+    try {
+      await apiFetch("/api/auth/password", {
+        method: "POST",
+        body: JSON.stringify({ email, password }),
+      })
+      router.push("/overview")
+      router.refresh()
+    } catch (err) {
+      if (err instanceof ApiError && err.status === 401) {
+        setError("Invalid email or password.")
+      } else if (err instanceof ApiError && err.status === 400) {
+        setError("Please enter both email and password.")
+      } else {
+        setError("Could not reach the server. Try again.")
+      }
+      setIsLoading(false)
+    }
   }
 
   return (
@@ -177,7 +199,10 @@ export default function LoginPage() {
                 name="email"
                 type="email"
                 required
-                placeholder="admin@kasekor.com"
+                autoComplete="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="admin@vkasekor.com"
                 className="w-full px-4 py-2.75 text-sm rounded-md outline-none transition-all duration-150 bg-white"
                 style={{
                   border: "1px solid var(--color-dried-grass)",
@@ -220,6 +245,9 @@ export default function LoginPage() {
                 name="password"
                 type={showPassword ? "text" : "password"}
                 required
+                autoComplete="current-password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
                 className="w-full px-4 py-2.75 text-sm rounded-md outline-none transition-all duration-150 bg-white"
                 style={{
@@ -229,6 +257,19 @@ export default function LoginPage() {
                 }}
               />
             </div>
+
+            {error && (
+              <p
+                role="alert"
+                className="text-xs"
+                style={{
+                  color: "#dc2626",
+                  fontFamily: "var(--font-inter)",
+                }}
+              >
+                {error}
+              </p>
+            )}
 
             {/* Submit */}
             <Button
