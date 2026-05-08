@@ -9,6 +9,7 @@ import { adminUsersRoutes } from "~/routes/users"
 import { alertsRoutes } from "~/routes/alerts"
 import { rulesRoutes } from "~/routes/rules"
 import { ledgerRoutes } from "~/routes/ledger"
+import { telegramRoutes } from "~/routes/telegram"
 import { runDailyCheck } from "~/cron/daily-check"
 
 await connectDb(env.MONGODB_URI)
@@ -42,7 +43,18 @@ app.route(
 app.route("/api/admin/users", adminUsersRoutes({ jwtSecret: env.JWT_SECRET }))
 app.route("/api/alerts", alertsRoutes({ jwtSecret: env.JWT_SECRET }))
 app.route("/api/rules", rulesRoutes({ jwtSecret: env.JWT_SECRET }))
-app.route("/api/ledger", ledgerRoutes({ botToken: env.BOT_TOKEN, chatId: env.TELEGRAM_GROUP_ID }))
+app.route(
+  "/api/ledger",
+  ledgerRoutes({
+    botToken: env.BOT_TOKEN,
+    chatId: env.TELEGRAM_GROUP_ID,
+    defaultFxRateKhrPerUsd: env.DEFAULT_FX_RATE_KHR_PER_USD,
+  }),
+)
+app.route(
+  "/api/telegram",
+  telegramRoutes({ botToken: env.BOT_TOKEN, webhookSecret: env.TELEGRAM_WEBHOOK_SECRET }),
+)
 
 // Dev-only endpoint to trigger the cron immediately for manual testing.
 if (env.NODE_ENV !== "production") {

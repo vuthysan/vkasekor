@@ -2,7 +2,7 @@ import { ObjectId } from "mongodb"
 import { collections } from "~/lib/db"
 import { startOfDayInPhnomPenh, daysBetween, enumerateDaysFrom, addDays } from "~/lib/lifecycle"
 import { matchingRulesForAge } from "~/lib/rule-matcher"
-import { formatAlertMessage } from "~/lib/khmer-formatter"
+import { formatAlertMessage, buildAckKeyboard } from "~/lib/khmer-formatter"
 import { sendTelegramMessage } from "~/lib/telegram"
 import type { Asset, Rule } from "~/types"
 import { ASSET_CONFIG } from "~/lib/asset-config"
@@ -34,8 +34,15 @@ export async function processOneRule(
       sent_at: null,
       delivery_status: "pending",
       telegram_message_id: null,
+      telegram_chat_id: null,
       error: null,
       attempt_count: 0,
+      ack_status: null,
+      ack_at: null,
+      ack_note_kh: null,
+      ack_photo_file_id: null,
+      ack_via: null,
+      ack_by_chat_id: null,
     })
   } catch (err: any) {
     if (err?.code === 11000) return // already processed (idempotent)
@@ -46,12 +53,18 @@ export async function processOneRule(
   // the alert as failed (not pending) so a future retry sweep can recover it.
 
   const text = formatAlertMessage({ asset, rule, batchLabel: batchLabel(asset), catchUp: isCatchUp })
+  const replyMarkup = buildAckKeyboard(alertId.toHexString())
 
   let resultOk = false
   let messageId: number | null = null
   let errorText: string | null = null
   try {
-    const result = await sendTelegramMessage({ botToken: args.botToken, chatId: args.chatId, text })
+    const result = await sendTelegramMessage({
+      botToken: args.botToken,
+      chatId: args.chatId,
+      text,
+      replyMarkup,
+    })
     resultOk = result.ok
     messageId = result.result?.message_id ?? null
     errorText = result.ok ? null : result.description ?? "unknown"
@@ -66,6 +79,7 @@ export async function processOneRule(
         sent_at: new Date(),
         delivery_status: resultOk ? "sent" : "failed",
         telegram_message_id: messageId,
+        telegram_chat_id: resultOk ? args.chatId : null,
         error: errorText,
       },
       $inc: { attempt_count: 1 },
@@ -94,8 +108,11 @@ export async function runDailyCheck(args: RunArgs): Promise<void> {
       for (const rule of rules) {
         await processOneRule(asset, rule, processingDay, isCatchUp, args)
       }
-      const harvestDay = ASSET_CONFIG[asset.type]?.defaultHarvestDays ?? 60
-      if (age >= harvestDay && asset.status === "active") {
+      const config = ASSET_CONFIG[asset.type]
+      const harvestDay = config?.defaultHarvestDays ?? 60
+      // Perennials (e.g. lemon) keep yielding for years — never auto-flip them.
+      // For one-shot assets, flip to "harvested" once age crosses the threshold.
+      if (!config?.perennial && age >= harvestDay && asset.status === "active") {
         await collections.assets().updateOne(
           { _id: asset._id },
           { $set: { status: "harvested", updated_at: new Date() } },

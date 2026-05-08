@@ -13,8 +13,15 @@ export async function setupTestDb(): Promise<void> {
   await collections.assets().createIndex({ status: 1 })
   await collections.rules().createIndex({ asset_type: 1, day_offset: 1 })
   await collections
+    .rules()
+    .createIndex({ asset_type: 1, day_offset: 1, title_kh: 1 }, { unique: true })
+  await collections
     .alerts()
     .createIndex({ asset_id: 1, rule_id: 1, scheduled_for: 1 }, { unique: true })
+  await collections.alerts().createIndex({ ack_status: 1, scheduled_for: -1 })
+  await collections
+    .alerts()
+    .createIndex({ telegram_message_id: 1, telegram_chat_id: 1 }, { sparse: true })
   await collections.system().createIndex({ key: 1 }, { unique: true })
 }
 

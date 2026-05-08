@@ -4,7 +4,11 @@ export interface AssetMetadata {
   emoji: string
   labelKh: string
   unitKh: string
+  // For one-shot crops/animals: days from arrival until ready to harvest.
+  // For perennials (perennial: true): days until first expected fruiting/yield —
+  // used only for display; the cron does NOT auto-flip perennials to harvested.
   defaultHarvestDays: number
+  perennial?: boolean
 }
 
 export const ASSET_CONFIG: Record<AssetType, AssetMetadata> = {
@@ -14,41 +18,21 @@ export const ASSET_CONFIG: Record<AssetType, AssetMetadata> = {
     unitKh: "ក្បាល",
     defaultHarvestDays: 60,
   },
-  pig: {
-    emoji: "🐖",
-    labelKh: "ជ្រូក",
-    unitKh: "ក្បាល",
-    defaultHarvestDays: 180,
-  },
-  duck: {
-    emoji: "🦆",
-    labelKh: "ទា",
-    unitKh: "ក្បាល",
-    defaultHarvestDays: 75,
-  },
   cucumber: {
     emoji: "🥒",
     labelKh: "ត្រសក់",
     unitKh: "រង",
     defaultHarvestDays: 45,
   },
-  cabbage: {
-    emoji: "🥬",
-    labelKh: "ស្ពៃក្តោប",
-    unitKh: "ដើម",
-    defaultHarvestDays: 70,
-  },
-  tomato: {
-    emoji: "🍅",
-    labelKh: "ប៉េងប៉ោះ",
-    unitKh: "ដើម",
-    defaultHarvestDays: 80,
-  },
   lemon: {
+    // Perennial: defaultHarvestDays is the first-fruiting horizon (~year 2),
+    // shown in the dashboard as "expected first harvest". The cron skips the
+    // auto-harvest flip for perennials, so year-2/3/4 rules continue to fire.
     emoji: "🍋",
     labelKh: "ក្រូចឆ្មារ",
     unitKh: "ដើម",
-    defaultHarvestDays: 360,
+    defaultHarvestDays: 720,
+    perennial: true,
   },
   cow: {
     emoji: "🐄",

@@ -171,16 +171,16 @@ export default function LedgerPage() {
         <div className="divide-y divide-field-stone">
           {isLoading
             ? [...Array(5)].map((_, i) => <div key={i} className="h-12 animate-pulse bg-field-stone/50 mx-5 my-2 rounded" />)
-            : data?.months.filter((m) => m.expense > 0 || m.revenue > 0).map((m) => (
+            : data?.months.filter((m) => m.total_expense_usd > 0 || m.total_revenue_usd > 0).map((m) => (
               <div key={m.month} className="flex items-center gap-4 px-5 py-3">
                 <div className="w-20 shrink-0">
                   <p className="text-sm font-medium text-[#333]" style={{ fontFamily: font }}>{MONTH_NAMES_KH[m.month - 1]}</p>
                 </div>
                 <div className="flex flex-1 items-center gap-4 text-xs" style={{ fontFamily: font }}>
-                  <span className="text-red-500">↓ ${m.expense.toFixed(2)}</span>
-                  <span className="text-green-600">↑ ${m.revenue.toFixed(2)}</span>
-                  {m.deaths > 0 && <span className="text-gray-500">💀 {m.deaths}</span>}
-                  {m.sold > 0 && <span className="text-blue-500">🛒 {m.sold}</span>}
+                  <span className="text-red-500">↓ ${m.total_expense_usd.toFixed(2)}</span>
+                  <span className="text-green-600">↑ ${m.total_revenue_usd.toFixed(2)}</span>
+                  {m.total_deaths > 0 && <span className="text-gray-500">💀 {m.total_deaths}</span>}
+                  {m.total_sold > 0 && <span className="text-blue-500">🛒 {m.total_sold}</span>}
                 </div>
                 <span
                   className={`tabular-nums text-sm font-semibold ${m.profit_loss_usd >= 0 ? "text-green-600" : "text-red-500"}`}
@@ -191,7 +191,7 @@ export default function LedgerPage() {
               </div>
             ))
           }
-          {!isLoading && data?.months.every((m) => m.expense === 0 && m.revenue === 0) && (
+          {!isLoading && data?.months.every((m) => m.total_expense_usd === 0 && m.total_revenue_usd === 0) && (
             <div className="px-5 py-12 text-center">
               <p className="text-sm text-[#aaa]" style={{ fontFamily: font }}>មិនមានទិន្នន័យសម្រាប់ឆ្នាំ {year} ទេ</p>
             </div>

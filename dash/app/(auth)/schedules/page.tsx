@@ -1,15 +1,16 @@
 "use client"
 
-import { useState, useEffect, useMemo, Fragment } from "react"
+import { useState, useEffect, useMemo, useCallback, Fragment } from "react"
 import type { ReactNode } from "react"
 import { motion, AnimatePresence } from "motion/react"
 import {
   Sparkles, Syringe, Wheat, Shield, Eye, Scissors, Printer,
   Bell, BookOpen, CheckCircle2, Clock, AlertTriangle,
+  SkipForward, HelpCircle, Loader2,
 } from "lucide-react"
 import {
-  fetchRules, fetchAlerts, ASSET_CONFIG,
-  type AssetType, type Rule, type Alert,
+  fetchRules, fetchAlerts, ackAlert, ASSET_CONFIG,
+  type AckStatus, type AssetType, type Rule, type Alert,
 } from "~/lib/api"
 
 // ─── Phase config ──────────────────────────────────────────────────────────
@@ -42,7 +43,7 @@ const SEVERITY_META: Record<string, { label: string; color: string; bg: string; 
 
 // ─── Asset type selector items ─────────────────────────────────────────────
 
-const ASSET_TABS: AssetType[] = ["chicken", "pig", "duck", "cow", "lemon", "cucumber", "cabbage", "tomato"]
+const ASSET_TABS: AssetType[] = ["chicken", "cow", "lemon", "cucumber"]
 
 // ─── Sub-components ─────────────────────────────────────────────────────────
 
@@ -127,12 +128,19 @@ function RuleCard({ rule, index, total }: { rule: Rule; index: number; total: nu
   )
 }
 
-function AlertCard({ alert }: { alert: Alert }) {
+interface AlertCardProps {
+  alert: Alert
+  onAck: (id: string, status: AckStatus) => void | Promise<void>
+  pendingStatus?: AckStatus | null
+}
+
+function AlertCard({ alert, onAck, pendingStatus }: AlertCardProps) {
   const phase    = getPhase(alert.category)
   const severity = SEVERITY_META[alert.severity] ?? SEVERITY_META.routine
   const cfg      = ASSET_CONFIG[alert.asset_type]
   const font     = "var(--font-inter), var(--font-kantumruy)"
   const date     = new Date(alert.scheduled_for).toLocaleDateString("km-KH", { month: "short", day: "numeric" })
+  const isAcking = !!pendingStatus
 
   return (
     <div className="rounded-xl border border-field-stone bg-white p-4 transition-shadow hover:shadow-sm">
@@ -155,12 +163,75 @@ function AlertCard({ alert }: { alert: Alert }) {
           <p className="mt-1 text-[13px] leading-relaxed text-[#666]" style={{ fontFamily: font }}>{alert.instructions_kh}</p>
         </div>
       </div>
-      {alert.sent_at && (
-        <div className="mt-3 flex items-center gap-1.5 text-[11px] text-green-600" style={{ fontFamily: font }}>
-          <CheckCircle2 className="h-3.5 w-3.5" /> ផ្ញើទៅ Telegram ហើយ
+
+      <div className="mt-3 flex flex-wrap items-center gap-2">
+        {alert.sent_at && (
+          <span className="inline-flex items-center gap-1 text-[11px] text-green-600" style={{ fontFamily: font }}>
+            <CheckCircle2 className="h-3.5 w-3.5" /> ផ្ញើទៅ Telegram ហើយ
+          </span>
+        )}
+        <div className="ml-auto flex items-center gap-1.5">
+          <AckButton
+            label="ធ្វើរួច"
+            icon={<CheckCircle2 className="h-3 w-3" />}
+            tone="done"
+            disabled={isAcking}
+            loading={pendingStatus === "done"}
+            onClick={() => onAck(alert._id, "done")}
+            font={font}
+          />
+          <AckButton
+            label="រំលង"
+            icon={<SkipForward className="h-3 w-3" />}
+            tone="skipped"
+            disabled={isAcking}
+            loading={pendingStatus === "skipped"}
+            onClick={() => onAck(alert._id, "skipped")}
+            font={font}
+          />
+          <AckButton
+            label="ត្រូវការជំនួយ"
+            icon={<HelpCircle className="h-3 w-3" />}
+            tone="blocked"
+            disabled={isAcking}
+            loading={pendingStatus === "blocked"}
+            onClick={() => onAck(alert._id, "blocked")}
+            font={font}
+          />
         </div>
-      )}
+      </div>
     </div>
+  )
+}
+
+function AckButton({
+  label, icon, tone, disabled, loading, onClick, font,
+}: {
+  label: string
+  icon: ReactNode
+  tone: AckStatus
+  disabled?: boolean
+  loading?: boolean
+  onClick: () => void
+  font: string
+}) {
+  const base = "inline-flex items-center gap-1 rounded-md border px-2 py-1 text-[11px] font-semibold transition-all cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
+  const tones: Record<AckStatus, string> = {
+    done:    "border-status-healthy-border bg-status-healthy-bg text-status-healthy hover:bg-green-100",
+    skipped: "border-field-stone bg-rice-parchment text-text-secondary hover:bg-row-hover",
+    blocked: "border-status-risk-border bg-status-risk-bg text-status-risk hover:bg-red-100",
+  }
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      disabled={disabled}
+      className={`${base} ${tones[tone]}`}
+      style={{ fontFamily: font }}
+    >
+      {loading ? <Loader2 className="h-3 w-3 animate-spin" /> : icon}
+      {label}
+    </button>
   )
 }
 
@@ -175,6 +246,24 @@ export default function SchedulesPage() {
   const [alerts, setAlerts]         = useState<Alert[]>([])
   const [isLoadingRules, setIsLoadingRules]   = useState(true)
   const [isLoadingAlerts, setIsLoadingAlerts] = useState(true)
+  // Track which alerts are mid-ack so we can disable buttons & show a spinner.
+  const [pendingAcks, setPendingAcks] = useState<Record<string, AckStatus>>({})
+
+  const handleAck = useCallback(async (id: string, status: AckStatus) => {
+    setPendingAcks((prev) => ({ ...prev, [id]: status }))
+    try {
+      await ackAlert(id, status)
+      // Backend filters acked alerts out of GET /api/alerts, so remove locally too.
+      setAlerts((prev) => prev.filter((a) => a._id !== id))
+    } catch (err) {
+      console.error("ack failed", err)
+      setPendingAcks((prev) => {
+        const next = { ...prev }
+        delete next[id]
+        return next
+      })
+    }
+  }, [])
 
   const font = "var(--font-inter), var(--font-kantumruy)"
 
@@ -377,7 +466,9 @@ export default function SchedulesPage() {
                 </div>
               ) : (
                 <div className="flex flex-col gap-3">
-                  {todayAlerts.map((a) => <AlertCard key={a._id} alert={a} />)}
+                  {todayAlerts.map((a) => (
+                    <AlertCard key={a._id} alert={a} onAck={handleAck} pendingStatus={pendingAcks[a._id]} />
+                  ))}
                 </div>
               )}
             </div>
@@ -395,7 +486,9 @@ export default function SchedulesPage() {
                 <div className="flex flex-col gap-3">
                   {weekAlerts
                     .filter((a) => new Date(a.scheduled_for).toDateString() !== new Date().toDateString())
-                    .map((a) => <AlertCard key={a._id} alert={a} />)}
+                    .map((a) => (
+                      <AlertCard key={a._id} alert={a} onAck={handleAck} pendingStatus={pendingAcks[a._id]} />
+                    ))}
                 </div>
               </div>
             )}

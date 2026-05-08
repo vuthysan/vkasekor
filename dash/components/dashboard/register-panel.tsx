@@ -46,11 +46,7 @@ const ASSET_TYPES = Object.entries(ASSET_CONFIG).map(([type, meta]) => ({
 
 const BREED_OPTIONS: Record<AssetType, string[]> = {
   chicken:  ["broiler", "layer", "local"],
-  pig:      ["native", "duroc", "landrace"],
-  duck:     ["local", "pekin", "muscovy"],
   cucumber: ["chinese", "japanese", "local"],
-  cabbage:  ["chinese", "round", "local"],
-  tomato:   ["cherry", "beef", "local"],
   lemon:    ["eureka", "lisbon", "local"],
   cow:      ["local", "brahman", "angus"],
 }

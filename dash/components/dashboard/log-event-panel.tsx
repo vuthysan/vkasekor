@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "motion/react"
 import { X } from "lucide-react"
-import { addLedgerEntry, ASSET_CONFIG, type LedgerType, type LedgerEntry, type Asset } from "~/lib/api"
+import { addLedgerEntry, ASSET_CONFIG, type Currency, type LedgerType, type LedgerEntry, type Asset } from "~/lib/api"
 
 interface LogEventPanelProps {
   isOpen: boolean
@@ -39,6 +39,7 @@ export function LogEventPanel({ isOpen, onClose, assetId, assetType, onSuccess }
   const [eventType, setEventType] = useState<LedgerType | "">("")
   const [quantity, setQuantity] = useState("")
   const [amount, setAmount] = useState("")
+  const [currency, setCurrency] = useState<Currency>("KHR")
   const [noteKh, setNoteKh] = useState("")
   const [bornDate, setBornDate] = useState(todayISO)
   const [errors, setErrors] = useState<FormErrors>({})
@@ -68,6 +69,7 @@ export function LogEventPanel({ isOpen, onClose, assetId, assetType, onSuccess }
     setEventType("")
     setQuantity("")
     setAmount("")
+    setCurrency("KHR")
     setNoteKh("")
     setBornDate(todayISO())
     setErrors({})
@@ -84,7 +86,7 @@ export function LogEventPanel({ isOpen, onClose, assetId, assetType, onSuccess }
     }
     if (needsAmount) {
       const amt = parseFloat(amount)
-      if (!amount || isNaN(amt) || amt < 0) errs.amount = "ចំនួនទឹកប្រាក់ត្រូវតែ ≥ $0"
+      if (!amount || isNaN(amt) || amt < 0) errs.amount = "ចំនួនទឹកប្រាក់ត្រូវតែ ≥ 0"
     }
     return errs
   }
@@ -100,7 +102,7 @@ export function LogEventPanel({ isOpen, onClose, assetId, assetType, onSuccess }
         asset_id: assetId,
         type: eventType as LedgerType,
         quantity: needsQty ? parseInt(quantity, 10) : undefined,
-        amount_usd: needsAmount ? parseFloat(amount) : undefined,
+        ...(needsAmount ? { currency, amount: parseFloat(amount) } : {}),
         note_kh: noteKh || undefined,
         born_arrival_date: eventType === "born" ? bornDate : undefined,
       })
@@ -219,21 +221,44 @@ export function LogEventPanel({ isOpen, onClose, assetId, assetType, onSuccess }
                   </div>
                 )}
 
-                {/* Amount (expense, revenue) */}
+                {/* Amount (expense, revenue) — KHR / USD toggle */}
                 {needsAmount && (
                   <div className="flex flex-col gap-1.5">
-                    <label className="text-[11px] font-semibold uppercase text-[#666]" style={{ letterSpacing: "0.08em" }}>
-                      ចំនួនទឹកប្រាក់ (USD $)
-                    </label>
-                    <input
-                      type="number"
-                      value={amount}
-                      onChange={(e) => { setAmount(e.target.value); setErrors((p) => ({ ...p, amount: undefined })) }}
-                      placeholder="ឧទាហរណ៍ 50.00"
-                      min="0"
-                      step="0.01"
-                      className={inputClass}
-                    />
+                    <div className="flex items-center justify-between">
+                      <label className="text-[11px] font-semibold uppercase text-[#666]" style={{ letterSpacing: "0.08em" }}>
+                        ចំនួនទឹកប្រាក់
+                      </label>
+                      <div className="flex items-center rounded-md border border-[#e5e5e0] bg-[#fafaf8] p-0.5 text-[10px] font-semibold">
+                        {(["KHR", "USD"] as const).map((cur) => (
+                          <button
+                            key={cur}
+                            type="button"
+                            onClick={() => setCurrency(cur)}
+                            className={`rounded px-2 py-0.5 transition-colors cursor-pointer ${
+                              currency === cur
+                                ? "bg-[#0f3d1f] text-white"
+                                : "text-[#666] hover:text-[#111]"
+                            }`}
+                          >
+                            {cur === "KHR" ? "៛ KHR" : "$ USD"}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                    <div className="relative">
+                      <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-sm text-[#999]">
+                        {currency === "KHR" ? "៛" : "$"}
+                      </span>
+                      <input
+                        type="number"
+                        value={amount}
+                        onChange={(e) => { setAmount(e.target.value); setErrors((p) => ({ ...p, amount: undefined })) }}
+                        placeholder={currency === "KHR" ? "ឧ. 100000" : "ឧ. 50.00"}
+                        min="0"
+                        step={currency === "KHR" ? "100" : "0.01"}
+                        className={`${inputClass} pl-7`}
+                      />
+                    </div>
                     {errors.amount && <p className="text-xs text-[#dc2626]">{errors.amount}</p>}
                   </div>
                 )}

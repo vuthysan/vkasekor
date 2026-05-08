@@ -187,4 +187,61 @@ export const MAFF_CHICKEN_RULES: Omit<Rule, "_id">[] = [
 			"ប្រមូលលាមកនិងអង្កាមចេញឲ្យអស់ លាងសម្អាតទ្រុងនិងឧបករណ៍ដោយប្រើសាប៊ូ រួចបាញ់ថ្នាំសម្លាប់មេរោគ ទុកចោលពី ១០ ទៅ ១៤ថ្ងៃ មុននឹងដាក់មាន់វគ្គថ្មី។",
 		source_page: 15,
 	},
+	// ===== ADDITIONS FROM MAFF/KOICA "ការចិញ្ចឹមមាន់" (2021) =====
+
+	// --- DAY -1: LITTER SETUP ---
+	{
+		asset_type: "chicken",
+		day_offset: -1,
+		category: "housing",
+		severity: "critical",
+		title_kh: "រៀបចំស្រទាប់អង្កាម (Litter) មុនកូនមាន់មកដល់",
+		instructions_kh:
+			"មុនកូនមាន់មកដល់ ១ថ្ងៃ៖\n• បាញ់ដីទ្រុងឲ្យសើមមួយចំណែក រួចទុកស្ងួត\n• បន្ទាប់ដាក់អង្កាម ឬកាកឈើកំចាត់ (Wood Shavings) កម្រាស់ ៥-១០សង់ទីម៉ែត្រ\n• ព្រែងឲ្យស្មើ កុំឲ្យជិតគល់ចៀមឬប្រេងពពុះ\n• ស្រទាប់នេះសំខាន់សម្រាប់រក្សាកម្តៅ និងស្រូបទឹកលាមក — បើសើមនឹងបណ្តាលឲ្យជំងឺផ្លូវដង្ហើម",
+		source_page: 12,
+	},
+	// --- DAY 12: COCCIDIOSIS WATCH (HIGH-RISK WINDOW DAYS 10-21) ---
+	{
+		asset_type: "chicken",
+		day_offset: 12,
+		category: "health",
+		severity: "critical",
+		title_kh: "ត្រួតពិនិត្យជំងឺឯកលាមកឈាម (Coccidiosis)",
+		instructions_kh:
+			"ដំណាក់កាលគ្រោះថ្នាក់បំផុត — ឯកលាមកឈាម អាចសម្លាប់មាន់ ៣០%+ ក្នុង ២-៣ថ្ងៃ បើមិនធ្វើ។\n• ពិនិត្យលាមករាល់ព្រឹក៖ បើឃើញលាមកមានឈាម (ពណ៌ក្រហម ឬត្នោតខ្មៅ) — ជំងឺនេះ\n• មាន់ស្រុះស្រាប់ ស្ងាត់ឡើងស៊ីតិច ស្ករគ្រោចក្រហម\n• ព្យាបាល៖ លាយ Amprolium (Coxistac) ឬ Sulfaquinoxaline ក្នុងទឹកផឹក ៥-៧ថ្ងៃ\n• បន្ថែមវីតាមីន ADE ដើម្បីស្តារ\n• ផ្លាស់អង្កាមភ្លាមៗ ព្រោះលាមកសើមមានស៊ុតមេរោគ",
+		source_page: 32,
+	},
+	// --- DAY 21: DIARRHEA / SALMONELLA WATCH ---
+	{
+		asset_type: "chicken",
+		day_offset: 21,
+		category: "health",
+		severity: "important",
+		title_kh: "ត្រួតពិនិត្យជំងឺរាក និងជំងឺ Salmonella",
+		instructions_kh:
+			"ដំណាក់កាល ៣សប្តាហ៍ ជំងឺរាកនិង Salmonella រកឃើញញឹក។\n• សញ្ញា៖ លាមករាវ ពណ៌បៃតង-លឿង មាន់ស្ងាត់ ស្ករគ្រោចចិញ្ចើមលឿង\n• ព្យាបាលដំបូង៖ លាយអំបិលរ៉ែ (Electrolyte) + វីតាមីន ក្នុងទឹកផឹក\n• បើធ្ងន់ធ្ងរ៖ Tetracycline ឬ Amoxicillin (តាមការណែនាំពេទ្យសត្វ)\n• ដកមាន់ឈឺចេញពីហ្វូងភ្លាម ដើម្បីកុំឲ្យឆ្លងគ្នា\n• បន្តស្អាតស្នុកទឹក និងចំណីរាល់ថ្ងៃ",
+		source_page: 35,
+	},
+	// --- DAY 35: FOWL POX AWARENESS ---
+	{
+		asset_type: "chicken",
+		day_offset: 35,
+		category: "health",
+		severity: "important",
+		title_kh: "ត្រួតពិនិត្យជំងឺឯកអុត (Fowl Pox)",
+		instructions_kh:
+			"ឯកអុតរាតត្បាតក្នុងកម្ពុជា — ចម្លងតាមមួស និងសត្វល្អិតផ្សេងៗ។\n• សញ្ញា៖ ស្នាមរាងដង្កូវ ឬដុំពកលើស្ករគ្រោច ក្រអូម កទាទា ស្បែកមុខ\n• បើឃើញ៖ ដាច់ដោយឯកមាន់ឈឺ ហៅពេទ្យសត្វមកមើល\n• ការបង្ការ៖ កម្ចាត់មួសក្នុងទ្រុង (ដុតភ្នេចភ្នាក់ភ្លើង ឬបាញ់ថ្នាំ)\n• បើក្នុងតំបន់រាតត្បាត — ពិចារណាចាក់វ៉ាក់សាំងឯកអុតនៅក្រោយ ២-៣សប្តាហ៍ ដោយបុក្ខ ប្រឹក្សាជាមួយពេទ្យសត្វ",
+		source_page: 33,
+	},
+	// --- DAY 56: PRE-HARVEST MEDICATION WITHDRAWAL ---
+	{
+		asset_type: "chicken",
+		day_offset: 56,
+		category: "harvest",
+		severity: "critical",
+		title_kh: "បញ្ឈប់ការផ្តល់ថ្នាំ មុនពេលប្រមូលផល (Pre-Harvest Withdrawal)",
+		instructions_kh:
+			"៤ថ្ងៃមុនការលក់ — ហាមផ្តល់ថ្នាំសម្លាប់មេរោគ (Antibiotics) និងវ៉ាក់សាំង!\n• សាច់នឹងមានសារធាតុសល់ (Drug Residue) ដែលបង្ខាំងចូលរាងកាយអ្នកប្រើ\n• ច្បាប់ផលិតផលអាហារកាត់ឲ្យហាមលក់សាច់មានសារធាតុថ្នាំ\n• មាន់ដែលបានព្យាបាលដោយ Tetracycline / Amoxicillin / Sulfa drugs ត្រូវរង់ចាំ ៧-១០ថ្ងៃ មុនលក់\n• បន្តផ្តល់៖ ទឹកស្អាត, វីតាមីន, ចំណីធម្មតា",
+		source_page: 30,
+	},
 ];

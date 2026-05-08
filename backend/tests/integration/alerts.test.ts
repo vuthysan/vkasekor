@@ -47,8 +47,15 @@ describe("GET /api/alerts", () => {
       sent_at: new Date(),
       delivery_status: "sent",
       telegram_message_id: 1,
+      telegram_chat_id: "-100",
       error: null,
       attempt_count: 1,
+      ack_status: null,
+      ack_at: null,
+      ack_note_kh: null,
+      ack_photo_file_id: null,
+      ack_via: null,
+      ack_by_chat_id: null,
     })
     const token = await authToken()
     const res = await buildApp().request("/api/alerts", { headers: { Cookie: `session=${token}` } })
@@ -70,8 +77,15 @@ describe("GET /api/alerts", () => {
         sent_at: new Date(),
         delivery_status: "sent",
         telegram_message_id: 1,
+        telegram_chat_id: "-100",
         error: null,
         attempt_count: 1,
+        ack_status: null,
+        ack_at: null,
+        ack_note_kh: null,
+        ack_photo_file_id: null,
+        ack_via: null,
+        ack_by_chat_id: null,
       },
       {
         _id: new ObjectId(),
@@ -81,8 +95,15 @@ describe("GET /api/alerts", () => {
         sent_at: new Date(),
         delivery_status: "sent",
         telegram_message_id: 2,
+        telegram_chat_id: "-100",
         error: null,
         attempt_count: 1,
+        ack_status: null,
+        ack_at: null,
+        ack_note_kh: null,
+        ack_photo_file_id: null,
+        ack_via: null,
+        ack_by_chat_id: null,
       },
     ])
     const token = await authToken()
@@ -104,8 +125,15 @@ describe("GET /api/alerts", () => {
       sent_at: new Date(),
       delivery_status: "sent",
       telegram_message_id: 5,
+      telegram_chat_id: "-100",
       error: null,
       attempt_count: 1,
+      ack_status: null,
+      ack_at: null,
+      ack_note_kh: null,
+      ack_photo_file_id: null,
+      ack_via: null,
+      ack_by_chat_id: null,
     })
     const token = await authToken()
     const res = await buildApp().request("/api/alerts?days=2", {

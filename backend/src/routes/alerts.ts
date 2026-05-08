@@ -1,4 +1,5 @@
 import { Hono } from "hono"
+import { z } from "zod"
 import { ObjectId } from "mongodb"
 import { collections } from "~/lib/db"
 import { requireAuth } from "~/middleware/auth"
@@ -7,6 +8,11 @@ import { startOfDayInPhnomPenh } from "~/lib/lifecycle"
 interface AlertsRouteConfig {
   jwtSecret: string
 }
+
+const AckSchema = z.object({
+  status: z.enum(["done", "skipped", "blocked"]),
+  note_kh: z.string().max(2000).optional(),
+})
 
 export function alertsRoutes(_cfg: AlertsRouteConfig) {
   const app = new Hono()
@@ -32,7 +38,7 @@ export function alertsRoutes(_cfg: AlertsRouteConfig) {
 
     // Aggregate: join rule fields + asset info in one query
     const alerts = await collections.alerts().aggregate([
-      { $match: { ...match, farmer_done_at: null } }, // exclude already-done tasks
+      { $match: { ...match, ack_status: null } }, // exclude already-acked tasks
       { $sort: { scheduled_for: -1 } },
       { $limit: 200 },
       {
@@ -71,7 +77,10 @@ export function alertsRoutes(_cfg: AlertsRouteConfig) {
           scheduled_for: 1,
           sent_at: 1,
           delivery_status: 1,
-          farmer_done_at: 1,
+          ack_status: 1,
+          ack_at: 1,
+          ack_note_kh: 1,
+          ack_via: 1,
           // From rule
           asset_type:      "$_rule.asset_type",
           day_offset:      "$_rule.day_offset",
@@ -89,14 +98,45 @@ export function alertsRoutes(_cfg: AlertsRouteConfig) {
     return c.json({ alerts })
   })
 
-  // Mark a task as done by the farmer
+  // Acknowledge a task with a richer status (done | skipped | blocked) + optional note.
+  app.patch("/:id/ack", async (c) => {
+    const id = c.req.param("id")
+    if (!ObjectId.isValid(id)) return c.json({ error: "invalid id" }, 400)
+
+    const body = await c.req.json().catch(() => ({}))
+    const parsed = AckSchema.safeParse(body)
+    if (!parsed.success) return c.json({ error: parsed.error.flatten() }, 400)
+
+    const result = await collections.alerts().updateOne(
+      { _id: new ObjectId(id) },
+      {
+        $set: {
+          ack_status: parsed.data.status,
+          ack_at: new Date(),
+          ack_via: "web",
+          ack_note_kh: parsed.data.note_kh ?? null,
+        },
+      },
+    )
+
+    if (result.matchedCount === 0) return c.json({ error: "not found" }, 404)
+    return c.json({ ok: true })
+  })
+
+  // Backward-compat alias for the dashboard's existing "mark done" button.
   app.patch("/:id/done", async (c) => {
     const id = c.req.param("id")
     if (!ObjectId.isValid(id)) return c.json({ error: "invalid id" }, 400)
 
     const result = await collections.alerts().updateOne(
       { _id: new ObjectId(id) },
-      { $set: { farmer_done_at: new Date() } },
+      {
+        $set: {
+          ack_status: "done",
+          ack_at: new Date(),
+          ack_via: "web",
+        },
+      },
     )
 
     if (result.matchedCount === 0) return c.json({ error: "not found" }, 404)

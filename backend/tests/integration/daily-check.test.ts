@@ -123,6 +123,28 @@ describe("runDailyCheck", () => {
     expect(after?.status).toBe("harvested")
   })
 
+  it("does NOT auto-harvest perennials (lemon) past defaultHarvestDays", async () => {
+    const _id = new ObjectId()
+    const arrival = startOfDayInPhnomPenh(addDays(new Date(), -800)) // > 720 (lemon's first-fruit horizon)
+    await collections.assets().insertOne({
+      _id,
+      type: "lemon",
+      breed: "eureka",
+      quantity_initial: 10,
+      quantity_current: 10,
+      arrival_date: arrival,
+      expected_harvest_date: addDays(arrival, 720),
+      status: "active",
+      notes: "",
+      created_by: new ObjectId(),
+      created_at: new Date(),
+      updated_at: new Date(),
+    })
+    await runDailyCheck({ botToken: "1:T", chatId: "-100" })
+    const after = await collections.assets().findOne({ _id })
+    expect(after?.status).toBe("active")
+  })
+
   it("marks alert failed when telegram returns ok:false", async () => {
     globalThis.fetch = mock(async () =>
       new Response(JSON.stringify({ ok: false, description: "blocked" }), { status: 400 }),

@@ -7,6 +7,7 @@ import { motion } from "motion/react"
 import {
   ArrowLeft, Plus, TrendingUp, TrendingDown,
   Skull, ShoppingCart, Baby, Wallet, Banknote,
+  Heart, Target, Percent,
 } from "lucide-react"
 import { LogEventPanel } from "~/components/dashboard/log-event-panel"
 import {
@@ -20,6 +21,22 @@ function fmt(date: string) {
 
 function ageInDays(dateStr: string) {
   return Math.floor((Date.now() - new Date(dateStr).getTime()) / 86_400_000)
+}
+
+function fmtKhr(n: number, opts?: { sign?: boolean }): string {
+  const sign = opts?.sign && n > 0 ? "+" : ""
+  // Round to nearest hundred riel — sub-100 precision is meaningless here.
+  const rounded = Math.round(n / 100) * 100
+  return `${sign}${rounded.toLocaleString("km-KH")} ៛`
+}
+
+function fmtUsd(n: number, opts?: { sign?: boolean }): string {
+  const sign = opts?.sign && n > 0 ? "+" : ""
+  return `${sign}$${n.toFixed(2)}`
+}
+
+function fmtPct(n: number): string {
+  return `${(n * 100).toFixed(0)}%`
 }
 
 const LEDGER_TYPE_META: Record<string, { label: string; icon: React.ReactNode; color: string; bg: string }> = {
@@ -39,6 +56,36 @@ function SummaryCard({ label, value, sub, positive }: { label: string; value: st
         className={`tabular-nums text-xl font-bold leading-none ${positive === true ? "text-green-600" : positive === false ? "text-red-500" : "text-[#111]"}`}
         style={{ fontFamily: font }}
       >
+        {value}
+      </p>
+      {sub && <p className="text-[11px] text-[#aaa]" style={{ fontFamily: font }}>{sub}</p>}
+    </div>
+  )
+}
+
+function MetricCard({ label, value, sub, icon, tone }: {
+  label: string
+  value: string
+  sub?: string
+  icon: React.ReactNode
+  tone?: "neutral" | "positive" | "negative"
+}) {
+  const font = "var(--font-inter), var(--font-kantumruy)"
+  const valueColor =
+    tone === "positive" ? "text-green-600" :
+    tone === "negative" ? "text-red-500" :
+    "text-[#111]"
+  const iconColor =
+    tone === "positive" ? "text-green-500" :
+    tone === "negative" ? "text-red-400" :
+    "text-[#999]"
+  return (
+    <div className="flex flex-col gap-1.5 rounded-xl border border-field-stone bg-white px-4 py-3.5">
+      <div className="flex items-center gap-1.5">
+        <span className={iconColor}>{icon}</span>
+        <p className="text-[10px] font-semibold uppercase tracking-wide text-[#999]" style={{ fontFamily: font }}>{label}</p>
+      </div>
+      <p className={`tabular-nums text-lg font-bold leading-none ${valueColor}`} style={{ fontFamily: font }}>
         {value}
       </p>
       {sub && <p className="text-[11px] text-[#aaa]" style={{ fontFamily: font }}>{sub}</p>}
@@ -113,7 +160,16 @@ export default function AssetDetailPage() {
 
   const cfg = ASSET_CONFIG[asset.type]
   const age = ageInDays(asset.arrival_date)
-  const plPositive = (summary?.profit_loss_usd ?? 0) >= 0
+  const plKhr      = summary?.profit_loss_khr ?? 0
+  const plUsd      = summary?.profit_loss_usd ?? 0
+  const expenseKhr = summary?.total_expense_khr ?? 0
+  const expenseUsd = summary?.total_expense_usd ?? 0
+  const revenueKhr = summary?.total_revenue_khr ?? 0
+  const revenueUsd = summary?.total_revenue_usd ?? 0
+  const survival   = summary?.survival_rate ?? 1
+  const costPerKhr = summary?.cost_per_surviving_khr ?? 0
+  const margin     = summary?.margin_pct ?? 0
+  const plPositive = plKhr >= 0
 
   return (
     <>
@@ -167,43 +223,100 @@ export default function AssetDetailPage() {
           <SummaryCard label="ចំណូលសម្រាប់" value={`${asset.quantity_current.toLocaleString()} ${cfg.unitKh}`} />
           <SummaryCard
             label="ចំណេញ/ខាត"
-            value={`$${(summary?.profit_loss_usd ?? 0) >= 0 ? "+" : ""}${(summary?.profit_loss_usd ?? 0).toFixed(2)}`}
+            value={fmtKhr(plKhr, { sign: true })}
+            sub={fmtUsd(plUsd, { sign: true })}
             positive={plPositive}
           />
         </motion.div>
 
-        {/* Financial summary */}
+        {/* Headline P/L card */}
         <motion.div
           initial={{ opacity: 0, y: 6 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3, delay: 0.05 }}
-          className="grid grid-cols-1 gap-4 sm:grid-cols-3"
+          className={`rounded-2xl border p-6 ${plPositive ? "border-green-200 bg-green-50" : "border-red-200 bg-red-50"}`}
+          style={{ boxShadow: "0 4px 20px rgba(0,0,0,0.04)" }}
+        >
+          <div className="flex flex-wrap items-end justify-between gap-4">
+            <div>
+              <div className={`flex items-center gap-2 text-sm font-semibold ${plPositive ? "text-green-700" : "text-red-600"}`} style={{ fontFamily: font }}>
+                {plPositive ? <TrendingUp className="h-4 w-4" /> : <TrendingDown className="h-4 w-4" />}
+                {plPositive ? "ចំណេញសរុប" : "ខាតសរុប"}
+              </div>
+              <p className={`mt-1.5 tabular-nums text-3xl font-bold leading-none ${plPositive ? "text-green-700" : "text-red-700"}`} style={{ fontFamily: "var(--font-playfair), var(--font-kantumruy)" }}>
+                {fmtKhr(plKhr, { sign: true })}
+              </p>
+              <p className={`mt-1 tabular-nums text-sm ${plPositive ? "text-green-600" : "text-red-500"}`} style={{ fontFamily: font }}>
+                {fmtUsd(plUsd, { sign: true })}
+              </p>
+            </div>
+            <div className="flex flex-col items-end gap-0.5">
+              <p className="text-[11px] font-semibold uppercase tracking-wide text-[#777]" style={{ fontFamily: font }}>ប្រាក់ចំណេញ %</p>
+              <p className={`tabular-nums text-2xl font-bold ${plPositive ? "text-green-700" : "text-red-600"}`} style={{ fontFamily: font }}>
+                {fmtPct(margin)}
+              </p>
+            </div>
+          </div>
+        </motion.div>
+
+        {/* Financial breakdown */}
+        <motion.div
+          initial={{ opacity: 0, y: 6 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3, delay: 0.08 }}
+          className="grid grid-cols-1 gap-3 sm:grid-cols-2"
         >
           <div className="rounded-xl border border-field-stone bg-white p-5" style={{ boxShadow: "0 4px 20px rgba(0,0,0,0.03)" }}>
             <div className="flex items-center gap-2 text-sm font-semibold text-[#dc2626]" style={{ fontFamily: font }}>
               <TrendingDown className="h-4 w-4" /> ចំណាយសរុប
             </div>
-            <p className="mt-2 tabular-nums text-2xl font-bold text-[#111]" style={{ fontFamily: font }}>
-              ${(summary?.total_expense_usd ?? 0).toFixed(2)}
+            <p className="mt-2 tabular-nums text-xl font-bold text-[#111]" style={{ fontFamily: font }}>
+              {fmtKhr(expenseKhr)}
+            </p>
+            <p className="mt-0.5 tabular-nums text-xs text-[#aaa]" style={{ fontFamily: font }}>
+              {fmtUsd(expenseUsd)}
             </p>
           </div>
           <div className="rounded-xl border border-field-stone bg-white p-5" style={{ boxShadow: "0 4px 20px rgba(0,0,0,0.03)" }}>
             <div className="flex items-center gap-2 text-sm font-semibold text-green-600" style={{ fontFamily: font }}>
               <TrendingUp className="h-4 w-4" /> ចំណូលសរុប
             </div>
-            <p className="mt-2 tabular-nums text-2xl font-bold text-[#111]" style={{ fontFamily: font }}>
-              ${(summary?.total_revenue_usd ?? 0).toFixed(2)}
+            <p className="mt-2 tabular-nums text-xl font-bold text-[#111]" style={{ fontFamily: font }}>
+              {fmtKhr(revenueKhr)}
+            </p>
+            <p className="mt-0.5 tabular-nums text-xs text-[#aaa]" style={{ fontFamily: font }}>
+              {fmtUsd(revenueUsd)}
             </p>
           </div>
-          <div className={`rounded-xl border p-5 ${plPositive ? "border-green-200 bg-green-50" : "border-red-200 bg-red-50"}`}>
-            <div className={`flex items-center gap-2 text-sm font-semibold ${plPositive ? "text-green-600" : "text-red-500"}`} style={{ fontFamily: font }}>
-              {plPositive ? <TrendingUp className="h-4 w-4" /> : <TrendingDown className="h-4 w-4" />}
-              ចំណេញ / ខាត
-            </div>
-            <p className={`mt-2 tabular-nums text-2xl font-bold ${plPositive ? "text-green-700" : "text-red-600"}`} style={{ fontFamily: font }}>
-              ${(summary?.profit_loss_usd ?? 0) >= 0 ? "+" : ""}{(summary?.profit_loss_usd ?? 0).toFixed(2)}
-            </p>
-          </div>
+        </motion.div>
+
+        {/* Per-batch metrics */}
+        <motion.div
+          initial={{ opacity: 0, y: 6 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3, delay: 0.11 }}
+          className="grid grid-cols-2 gap-3 sm:grid-cols-3"
+        >
+          <MetricCard
+            label="អត្រារស់"
+            value={fmtPct(survival)}
+            sub={`${asset.quantity_current.toLocaleString()} / ${asset.quantity_initial.toLocaleString()} ${cfg.unitKh}`}
+            icon={<Heart className="h-3.5 w-3.5" />}
+            tone={survival >= 0.9 ? "positive" : survival < 0.7 ? "negative" : "neutral"}
+          />
+          <MetricCard
+            label={`ចំណាយក្នុង ១ ${cfg.unitKh}`}
+            value={fmtKhr(costPerKhr)}
+            sub={`រស់ ${asset.quantity_current.toLocaleString()} ${cfg.unitKh}`}
+            icon={<Target className="h-3.5 w-3.5" />}
+          />
+          <MetricCard
+            label="ប្រាក់ចំណេញ %"
+            value={fmtPct(margin)}
+            sub={plPositive ? "ចំណេញ" : "ខាត"}
+            icon={<Percent className="h-3.5 w-3.5" />}
+            tone={plPositive ? "positive" : "negative"}
+          />
         </motion.div>
 
         {/* Ledger table */}
@@ -260,10 +373,18 @@ export default function AssetDetailPage() {
                           {entry.quantity} {cfg.unitKh}
                         </p>
                       )}
-                      {entry.amount_usd != null && (
-                        <p className={`tabular-nums text-sm font-semibold ${entry.type === "expense" ? "text-red-600" : "text-green-600"}`} style={{ fontFamily: font }}>
-                          {entry.type === "expense" ? "-" : "+"}${(entry.amount_usd ?? 0).toFixed(2)}
-                        </p>
+                      {(entry.amount_khr != null || entry.amount_usd != null) && (
+                        <>
+                          <p className={`tabular-nums text-sm font-semibold ${entry.type === "expense" ? "text-red-600" : "text-green-600"}`} style={{ fontFamily: font }}>
+                            {entry.type === "expense" ? "-" : "+"}
+                            {entry.amount_khr != null ? fmtKhr(entry.amount_khr) : fmtUsd(entry.amount_usd ?? 0)}
+                          </p>
+                          {entry.amount_khr != null && entry.amount_usd != null && (
+                            <p className="tabular-nums text-[11px] text-[#aaa]" style={{ fontFamily: font }}>
+                              {fmtUsd(entry.amount_usd)}
+                            </p>
+                          )}
+                        </>
                       )}
                     </div>
                   </div>

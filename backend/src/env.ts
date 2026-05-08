@@ -11,6 +11,11 @@ const EnvSchema = z.object({
   ADMIN_EMAIL: z.string().email(),
   ADMIN_PASSWORD_HASH: z.string().min(1),
   ADMIN_USER_ID: z.string().length(24),
+  TELEGRAM_WEBHOOK_SECRET: z.string().min(16, "TELEGRAM_WEBHOOK_SECRET must be at least 16 chars"),
+  TELEGRAM_WEBHOOK_URL: z.string().url().optional(),
+  // KHR per 1 USD. Captured on each ledger entry at write time so historical
+  // entries don't shift if the rate changes later.
+  DEFAULT_FX_RATE_KHR_PER_USD: z.coerce.number().positive().default(4100),
 })
 
 export type Env = z.infer<typeof EnvSchema>

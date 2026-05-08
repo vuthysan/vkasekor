@@ -11,6 +11,7 @@ const base = {
   ADMIN_EMAIL: "admin@example.com",
   ADMIN_PASSWORD_HASH: "somehash",
   ADMIN_USER_ID: "a".repeat(24),
+  TELEGRAM_WEBHOOK_SECRET: "w".repeat(24),
 }
 
 describe("loadEnv", () => {

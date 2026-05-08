@@ -9,7 +9,7 @@ import { ASSET_CONFIG } from "~/lib/asset-config"
 import type { Asset } from "~/types"
 
 const CreateSchema = z.object({
-  type: z.enum(["chicken", "pig", "duck", "cucumber", "cabbage", "tomato", "lemon", "cow"]),
+  type: z.enum(["chicken", "cucumber", "lemon", "cow"]),
   breed: z.string().min(1),
   quantity_initial: z.number().int().positive(),
   arrival_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),

@@ -1,4 +1,4 @@
-import type { Asset, Rule, Severity } from "~/types"
+import type { AckStatus, Asset, Rule, Severity, TelegramInlineKeyboard } from "~/types"
 import { toKhmerNumerals } from "~/lib/khmer-numerals"
 import { ASSET_CONFIG } from "~/lib/asset-config"
 
@@ -42,4 +42,30 @@ export function formatAlertMessage({ asset, rule, batchLabel, catchUp }: FormatA
     "",
     `📖 ប្រភព: MAFF ទំព័រ ${pageKh}`,
   ].join("\n")
+}
+
+export function buildAckKeyboard(alertId: string): TelegramInlineKeyboard {
+  return {
+    inline_keyboard: [
+      [
+        { text: "✅ ធ្វើរួច", callback_data: `ack:done:${alertId}` },
+        { text: "⏭️ រំលង", callback_data: `ack:skipped:${alertId}` },
+        { text: "❓ ត្រូវការជំនួយ", callback_data: `ack:blocked:${alertId}` },
+      ],
+    ],
+  }
+}
+
+const ACK_BADGE: Record<AckStatus, string> = {
+  done: "✅ ធ្វើរួច",
+  skipped: "⏭️ រំលង",
+  blocked: "❓ ត្រូវការជំនួយ",
+}
+
+export function formatAckedMessage(originalText: string, status: AckStatus, ackedAt: Date): string {
+  // Phnom Penh is UTC+7, no DST.
+  const hh = (ackedAt.getUTCHours() + 7) % 24
+  const mm = ackedAt.getUTCMinutes()
+  const timeKh = `${toKhmerNumerals(hh).padStart(2, "០")}:${toKhmerNumerals(mm).padStart(2, "០")}`
+  return `${originalText}\n━━━━━━━━━━━━━━━━━━━━━\n${ACK_BADGE[status]} — ${timeKh}`
 }

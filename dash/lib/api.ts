@@ -48,7 +48,7 @@ function safeJson(text: string): unknown {
 
 // ─── Domain Types ──────────────────────────────────────────────────────────
 
-export type AssetType = "chicken" | "pig" | "duck" | "cucumber" | "cabbage" | "tomato" | "lemon" | "cow"
+export type AssetType = "chicken" | "cucumber" | "lemon" | "cow"
 export type AssetStatus = "active" | "harvested" | "archived"
 export type LedgerType = "expense" | "revenue" | "death" | "sold" | "born"
 
@@ -66,24 +66,43 @@ export interface Asset {
   created_at: string
 }
 
+export type Currency = "KHR" | "USD"
+
 export interface LedgerEntry {
   _id: string
   asset_id: string
   type: LedgerType
   quantity?: number
+  // money fields (matches backend; legacy entries may only have amount_usd)
+  currency?: Currency
+  amount?: number
+  amount_khr?: number
   amount_usd?: number
+  fx_rate_khr_per_usd?: number
   note_kh?: string
   child_asset_id?: string
   recorded_at: string
 }
 
 export interface LedgerSummary {
+  total_expense_khr: number
+  total_revenue_khr: number
+  profit_loss_khr: number
   total_expense_usd: number
   total_revenue_usd: number
+  profit_loss_usd: number
   total_deaths: number
   total_sold: number
   total_born: number
-  profit_loss_usd: number
+  // Per-batch metrics (only on /api/ledger/:asset_id, not on summaries)
+  quantity_initial?: number
+  quantity_current?: number
+  survival_rate?: number
+  cost_per_surviving_khr?: number
+  cost_per_surviving_usd?: number
+  revenue_per_sold_khr?: number
+  revenue_per_sold_usd?: number
+  margin_pct?: number
 }
 
 // ─── Asset API ─────────────────────────────────────────────────────────────
@@ -129,6 +148,10 @@ export interface CreateLedgerEntryPayload {
   asset_id: string
   type: LedgerType
   quantity?: number
+  // Preferred new shape:
+  currency?: Currency
+  amount?: number
+  // Legacy (still accepted by backend):
   amount_usd?: number
   note_kh?: string
   born_arrival_date?: string
@@ -156,20 +179,8 @@ export async function fetchMonthlySummary(year: number, month: number): Promise<
 
 export interface YearlySummary {
   year: number
-  months: Array<{
-    month: number
-    expense: number
-    revenue: number
-    deaths: number
-    sold: number
-    born: number
-    profit_loss_usd: number
-  }>
-  totals: {
-    total_expense_usd: number
-    total_revenue_usd: number
-    profit_loss_usd: number
-  }
+  months: Array<LedgerSummary & { month: number }>
+  totals: LedgerSummary
 }
 
 export async function fetchYearlySummary(year: number): Promise<YearlySummary> {
@@ -199,6 +210,8 @@ export async function fetchRules(assetType?: AssetType): Promise<Rule[]> {
 
 // ─── Alerts API ─────────────────────────────────────────────────────────────
 
+export type AckStatus = "done" | "skipped" | "blocked"
+
 export interface Alert {
   _id: string
   asset_id: string
@@ -212,6 +225,11 @@ export interface Alert {
   scheduled_for: string
   sent_at?: string
   delivery_status?: string
+  // ack flow (matches backend Alert)
+  ack_status?: AckStatus | null
+  ack_at?: string | null
+  ack_note_kh?: string | null
+  ack_via?: "telegram" | "web" | null
   // enriched from asset doc
   asset_breed?: string
   asset_notes?: string
@@ -226,22 +244,30 @@ export async function fetchAlerts(opts?: { assetId?: string; days?: number }): P
   return res.alerts
 }
 
-export async function markAlertDone(id: string): Promise<{ ok: boolean }> {
-  return apiFetch<{ ok: boolean }>(`/api/alerts/${id}/done`, {
+export async function ackAlert(
+  id: string,
+  status: AckStatus,
+  note_kh?: string,
+): Promise<{ ok: boolean }> {
+  return apiFetch<{ ok: boolean }>(`/api/alerts/${id}/ack`, {
     method: "PATCH",
+    body: JSON.stringify(note_kh ? { status, note_kh } : { status }),
+    headers: { "Content-Type": "application/json" },
   })
+}
+
+// Backward-compat alias: routes through the new /ack endpoint as status="done".
+export async function markAlertDone(id: string): Promise<{ ok: boolean }> {
+  return ackAlert(id, "done")
 }
 
 
 // ─── Asset Config (mirrors backend) ────────────────────────────────────────
 
-export const ASSET_CONFIG: Record<AssetType, { emoji: string; labelKh: string; unitKh: string; defaultHarvestDays: number }> = {
+export const ASSET_CONFIG: Record<AssetType, { emoji: string; labelKh: string; unitKh: string; defaultHarvestDays: number; perennial?: boolean }> = {
   chicken:  { emoji: "🐔", labelKh: "មាន់",       unitKh: "ក្បាល", defaultHarvestDays: 60  },
-  pig:      { emoji: "🐖", labelKh: "ជ្រូក",      unitKh: "ក្បាល", defaultHarvestDays: 180 },
-  duck:     { emoji: "🦆", labelKh: "ទា",          unitKh: "ក្បាល", defaultHarvestDays: 75  },
   cucumber: { emoji: "🥒", labelKh: "ត្រសក់",     unitKh: "រង",    defaultHarvestDays: 45  },
-  cabbage:  { emoji: "🥬", labelKh: "ស្ពៃក្តោប", unitKh: "ដើម",   defaultHarvestDays: 70  },
-  tomato:   { emoji: "🍅", labelKh: "ប៉េងប៉ោះ",  unitKh: "ដើម",   defaultHarvestDays: 80  },
-  lemon:    { emoji: "🍋", labelKh: "ក្រូចឆ្មារ", unitKh: "ដើម",   defaultHarvestDays: 360 },
+  // Perennial: defaultHarvestDays = "expected first fruiting" (~year 2). Backend never auto-archives.
+  lemon:    { emoji: "🍋", labelKh: "ក្រូចឆ្មារ", unitKh: "ដើម",   defaultHarvestDays: 720, perennial: true },
   cow:      { emoji: "🐄", labelKh: "គោ",          unitKh: "ក្បាល", defaultHarvestDays: 540 },
 }
